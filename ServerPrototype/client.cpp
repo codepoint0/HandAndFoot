@@ -56,17 +56,20 @@ int SetUpConnection(){
 }
 
 int SendMessage(){
-    while(message.compare("1000000") || message.compare("-1000000")){
+    int value = std::stoi(message);
+    while(value != 700000 && value != -700000){
+        
         send(sock , message.c_str() , strlen(message.c_str()) , 0 ); 
         valread = read( sock , buffer, 1024); 
         printf("%s\n",buffer ); 
 
         message = buffer;
+        value = std::stoi(message);
         std::fill_n(buffer, 1024, 0);
     }
-    if(message.compare("1000000") == 0)
+    if(message.compare("700000") == 0)
         send(sock , "-1" , strlen("-1") , 0 ); 
-    if(message.compare("-1000000") == 0)
+    if(message.compare("-700000") == 0)
         send(sock , "2" , strlen("2") , 0 );
     return 0;
 }
