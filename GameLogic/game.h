@@ -6,38 +6,43 @@ using namespace std;
 
 class Player{
     private:
-        Hand hand;
-        Hand foot;
+        Hand* hand;
+        Hand* foot;
+        Team* team;
         bool inFoot;
-        Team* t;
-        void draw();
-        bool discard(Card c);
-        void pickUp();
-        bool play();
-        int score();
     public:
-        Player(Team* t, Board* b);        
+        Player(Team* t, Board* b);
+        ~Player();
+
+        void draw();
+        void discard(Card c);
+        void pickUp();
+        bool play(vector<Card>* c);
+        int score();
+        void reset(Board* b);
+        vector<Card> peek();
+        void swap();
 };
 
 class Team{
     private:
-        Group groups[11];
         Player* p1;
         Player* p2;
-        bool meld;
-        int score();
     public:
-        Team(BoardState* b);
-        Team(const Team& t);
+        Team(Board* b);
         ~Team();
 
-        Team& operator=(const Team& other);
+        bool meld;
+        Group groups[11];
+
+        int score();
+        void reset(Board* b);
 };
 
 class BoardState{
     private:
         Board* b;
-        Team t[];
+        Team* t[];
         int scores[];
         void reset();
     public:

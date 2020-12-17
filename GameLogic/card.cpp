@@ -15,10 +15,10 @@ struct EmptyPileException : public std::exception{
     }
 };
 
-int values[] = {20, 20, -100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
+int values[] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
 
 bool Card::operator==(const Card& c) {
-    return ((joker == c.joker)&&(value==c.value)&&(suit==c.suit)&&(cardValue==c.cardValue)&&(deckID==c.deckID));
+    return ((wild == c.wild)&&(value==c.value)&&(suit==c.suit)&&(cardValue==c.cardValue)&&(deckID==c.deckID));
 }
 
 Board::Board(int decks){
@@ -26,11 +26,12 @@ Board::Board(int decks){
         for(int j = 0; j < 54; j++){
             if(j < 52){
                 if((j/13 == 1 || j/13 == 2) && j%13 == 2){
-                    Card c(false, (j%13)+1, j/13, values[j%13] - 200, i);
+                    Card c((j%13 == 1), (j%13)+1, j/13, values[j%13] + 200, i);
                     wreath.push_back(c);
                 }
                 else{
-                    Card c(false, (j%13)+1, j/13, values[j%13], i);
+                    // j%13 == 1 checks for 2 (wild)
+                    Card c((j%13 == 1), (j%13)+1, j/13, values[j%13], i);
                     wreath.push_back(c);
                 }
             } 
@@ -146,4 +147,34 @@ void Hand::pickUp(){
     for(int i = 0; i < c.size(); i++){
         cards.push_back(c[i]);
     }
+}
+
+int Hand::score(){
+    int score;
+    for(vector<Card>::iterator jt = cards.begin();jt != cards.end();jt++) {
+        score += jt->cardValue;
+    }
+    return score;
+}
+
+Card Hand::peek(){
+    return cards[0];
+}
+
+int Group::score(){
+    int size = cards.size();
+    int score = 0;
+    for(int i = 0; i < size; i++){
+        score += cards[i].cardValue;
+    }
+    if(size > 6){
+        if(dirty){
+            score += 300;
+        }
+        else{
+            score += 500;
+        }
+    }
+    
+    return score;
 }
