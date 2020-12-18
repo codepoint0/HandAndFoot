@@ -1,16 +1,24 @@
+#ifndef GAME
+#define GAME
 #include <cstdlib>
 #include <vector>
 #include "card.h"
 
 using namespace std;
 
+class Team;
+class Player;
+
 class Player{
     private:
+        
+    public:
         Hand* hand;
         Hand* foot;
-        Team* team;
         bool inFoot;
-    public:
+        Team* team;
+        int playerID;
+
         Player(Team* t, Board* b);
         ~Player();
 
@@ -26,11 +34,13 @@ class Player{
 
 class Team{
     private:
-        Player* p1;
-        Player* p2;
+        
     public:
         Team(Board* b);
         ~Team();
+
+        Player* p1;
+        Player* p2;
 
         bool meld;
         Group groups[11];
@@ -41,11 +51,16 @@ class Team{
 
 class BoardState{
     private:
-        Board* b;
-        Team* t[];
-        int scores[];
-        void reset();
+
     public:
-        BoardState();
+        BoardState(int ts);
         ~BoardState();
+
+        Board* b;
+        vector<Team*> t;
+        vector<int> scores;
+        int teams;
+
+        void reset();
 };
+#endif

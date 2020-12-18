@@ -1,24 +1,13 @@
 #include "card.h"
 #include <random>
+#include <iostream>
 #include <algorithm>
-#include <exception>
-
-struct EmptyWreathException : public std::exception{
-    const char * what() const throw(){
-        return "Empty Wreath Exception: The wreath ran out of cards and the pile was empty!";
-    }
-};
-
-struct EmptyPileException : public std::exception{
-    const char * what() const throw(){
-        return "Empty Pile Exception: The pile cannot be picked up if it is empty.";
-    }
-};
+#include "errors.cpp"
 
 int values[] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
 
 bool Card::operator==(const Card& c) {
-    return ((wild == c.wild)&&(value==c.value)&&(suit==c.suit)&&(cardValue==c.cardValue)&&(deckID==c.deckID));
+    return ((value==c.value)&&(suit==c.suit)&&(deckID==c.deckID));
 }
 
 Board::Board(int decks){
@@ -41,8 +30,9 @@ Board::Board(int decks){
             }
         }
     }
-
+    
     random_shuffle(wreath.begin(), wreath.end());
+    discard(draw());
 }
 
 Card Board::draw(){
@@ -88,6 +78,13 @@ void Board::discard(Card c){
     pile.push_front(c);
 }
 
+Card Board::pilePeek(){
+    if(pile.empty()){
+        throw CardDoesNotExistException();
+    }
+    return pile[0];
+}
+
 
 Hand::Hand(Board* b) {
     board = b;
@@ -111,6 +108,7 @@ Hand& Hand::operator=(const Hand& h) {
             this->cards.push_back(h.cards[i]);
         }
     }
+    return *this;
 }
 
 void Hand::draw() {
@@ -131,11 +129,13 @@ void Hand::discard(Card c){
 }
 
 void Hand::remove(vector<Card> c) {
-    for(vector<Card>::iterator it = c.begin();it != c.end();it++) {
-        for(vector<Card>::iterator jt = cards.begin();jt != cards.end();jt++) {
-            if(*it == *jt) {
-                cards.erase(jt,jt+1);
-                jt = cards.end();
+    for(int i = 0; i < c.size(); i++) {
+        if(!(contains(c[i]))) {
+            throw CardDoesNotExistException();
+        }
+        for(int j = 0; j < cards.size(); j++) {
+            if(c[i] == cards[j]) {
+                cards.erase(cards.begin()+j);
             }
         }
     }
@@ -159,6 +159,10 @@ int Hand::score(){
 
 Card Hand::peek(){
     return cards[0];
+}
+
+bool Hand::contains(Card c){
+    return find(cards.begin(), cards.end(), c) != cards.end();
 }
 
 int Group::score(){

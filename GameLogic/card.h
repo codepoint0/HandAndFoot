@@ -1,3 +1,6 @@
+#ifndef CARD
+#define CARD
+
 /*
     Card code which holds the struct of a card, a group of cards
     the board and a hand. Holds the logic for each of these things.
@@ -57,6 +60,7 @@ class Board{
         Card draw();
         vector<Card> pickUp();
         void discard(Card c); 
+        Card pilePeek();
 };
 
 class Hand{
@@ -75,4 +79,6 @@ class Hand{
         void remove(vector<Card> c);
         int score();
         Card peek();
+        bool contains(Card c);
 };
+#endif

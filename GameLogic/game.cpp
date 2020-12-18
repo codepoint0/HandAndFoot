@@ -183,3 +183,31 @@ int Team::score(){
     }
     return score - (p1->score() + p2->score());
 }
+
+BoardState::BoardState(int ts){
+    teams = ts;
+    b = new Board(ts);
+    for(int i = 0; i < ts; i++){
+        Team* team = new Team(b);
+        t.push_back(team);
+        scores.push_back(0);
+    }
+}
+
+BoardState::~BoardState(){
+    for(int i = 0; i < teams; i++){
+        delete t[i];
+    }
+    delete b;
+}
+
+void BoardState::reset(){
+    for(int i = 0; i < teams; i++){
+        scores[i] += t[i]->score();
+    }
+    delete b;
+    b = new Board(teams);
+    for(int i = 0; i < teams; i++){
+        t[i]->reset(b);
+    }
+}
