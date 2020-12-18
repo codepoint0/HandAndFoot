@@ -1,8 +1,18 @@
+/*
+    HAND AND FOOT
+    Game code manages the player, teams and the board as a whole.
+
+    Created by: Joshua Speckman and Tyler Gordon
+    Date: December 15, 2020
+    Modified: December 17, 2020
+    File: game.cpp
+*/
 #include <iostream>
 #include "game.h"
 #include "card.h"
 #include "errors.cpp"
 
+// Shows what piles can be played in
 int GS[11] = {1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
 Player::Player(Team* t, Board* b){
@@ -50,6 +60,8 @@ bool Player::play(vector<Card>* c){
     
     if(!team->meld){
         int score;
+
+        // Counts up the cards to see if a player can meld
         for(int i = 0; i < 11; i++){
             for(int j = 0; j < c[i].size(); j++){
                 score += c[i][j].cardValue;
@@ -64,11 +76,16 @@ bool Player::play(vector<Card>* c){
     int cardNum = 0;
     int numWilds = 0;
 
+    // Create the two piles together in a temp array, see if
+    // the two piles combined are valid, then combine them if so.
     for(int i = 0; i < 11; i++){
         numWilds = 0;
         vector<Card> temp = team->groups[i].cards;
         temp.insert(temp.end(), c[i].begin(), c[i].end());
 
+        // Determines if there are too many wilds in the pile to
+        // place more wilds in and counts the number of cards being
+        // placed down
         if(temp.size() > 0){
             for(int j = 0; j < temp.size(); j++){
                 if(temp[j].wild){
@@ -82,8 +99,8 @@ bool Player::play(vector<Card>* c){
                 cardNum++;
             }
 
-            std::cout << numWilds << " " << cardNum << std::endl;
-
+            // If therer are not 3 cards in the pile OR there are more wilds
+            // than the number card then not valid
             if(temp.size() < 3 || numWilds > (temp.size()/2)){
                 throw NotEnoughCardsException();
             }

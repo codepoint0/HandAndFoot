@@ -1,3 +1,12 @@
+/*
+    HAND AND FOOT
+    Holds all error messages for the game.
+
+    Created by: Joshua Speckman and Tyler Gordon
+    Date: December 15, 2020
+    Modified: December 17, 2020
+    File: errors.cpp
+*/
 #include <exception>
 
 struct EmptyWreathException : public std::exception{
