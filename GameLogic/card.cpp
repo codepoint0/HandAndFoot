@@ -133,6 +133,9 @@ void Hand::remove(vector<Card> c) {
         if(!(contains(c[i]))) {
             throw CardDoesNotExistException();
         }
+    }
+
+    for(int i = 0; i < c.size(); i++) {
         for(int j = 0; j < cards.size(); j++) {
             if(c[i] == cards[j]) {
                 cards.erase(cards.begin()+j);

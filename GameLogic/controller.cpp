@@ -18,7 +18,7 @@ vector<string> split(string str, string token){
     return result;
 }
 
-int vals[] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
+int vals[13] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
 
 Controller::Controller(int teams){
     b = new BoardState(teams);
@@ -88,14 +88,10 @@ int Controller::play(stringstream& ss){
         std::cin >> input;
 
         while(input.compare("P") == 0){
-            std::cout << "1" << std::endl;
             std::cin.ignore();
-            input = "";
-            cin >> input;
+            std::getline(std::cin, input);
             vector<Card> c[11];
-            std::cout << "2" << std::endl;
             vector<std::string> cardSet;
-            std::stringstream t;
 
 
             cardSet = split(input, "|");
@@ -104,28 +100,31 @@ int Controller::play(stringstream& ss){
 
             for(int i = 0; i < 11; i++){
                 vector<std::string> cardStrings;
-                t << cardSet[i];
-                cardStrings = split(t.str(), ",");
-                std::cout << cardSet[i] << std::endl;
+                cardStrings = split(cardSet[i], ",");
                 int value,suit,deckID;
                 vector<Card> cards;
                 if(!(cardSet[i].compare("") == 0)){
                     for(int j = 0; j < cardStrings.size(); j++){
-                        t.flush();
+                        vector<std::string> s;
+                        s = split(cardStrings[j], " ");
 
-                        t << cardStrings[j];
-                        t >> value >> suit >> deckID;
-                        Card test(false,value,suit,0,deckID);
-                        cards.push_back(test);
+                        value = std::stoi(s[0]);
+                        suit = std::stoi(s[1]);
+                        deckID = std::stoi(s[2]);
+                        
+                        if(value > 51){
+                            Card test(true,value,suit,50,deckID);
+                            cards.push_back(test);
+                        }
+                        else {
+                            Card test((value == 2),value,suit,vals[value-1],deckID);
+                            cards.push_back(test);
+                        }
 
                     }
                 }
-
-                t.flush();
                 c[i] = cards;
-                cards.clear();
             }
-
             turn[currentTurn]->play(c);
             std::cout << "Play or Moveon\n";
             std::cin >> input;
@@ -146,8 +145,14 @@ int Controller::play(stringstream& ss){
 
         int value,suit,deckID;
         std::cin >> value >> suit >> deckID;
-        Card c(false,value,suit,0,deckID);
-        turn[currentTurn]->discard(c);
+        if(value > 51){
+            Card test(true,value,suit,50,deckID);
+            turn[currentTurn]->discard(test);
+        }
+        else {
+            Card test((value == 2),value,suit,vals[value-1],deckID);
+            turn[currentTurn]->discard(test);
+        }
           
         if(turn[currentTurn]->inFoot && turn[currentTurn]->foot->cards.size() == 0){
             b->reset();

@@ -1,5 +1,7 @@
+#include <iostream>
 #include "game.h"
 #include "card.h"
+#include "errors.cpp"
 
 int GS[11] = {1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 
@@ -54,66 +56,62 @@ bool Player::play(vector<Card>* c){
             }
         }
         if(score < 70){
-            // Not enough to meld
-            return false;
+            throw NotEnoughToMeldExcpetion();
         }
     }
     
     bool clean = false;
     int cardNum = 0;
+    int numWilds = 0;
 
     for(int i = 0; i < 11; i++){
+        numWilds = 0;
         vector<Card> temp = team->groups[i].cards;
         temp.insert(temp.end(), c[i].begin(), c[i].end());
 
-        int numWilds;
-        for(int j = 0; j < temp.size(); j++){
-            if(temp[j].wild){
-                numWilds++;
-            }
-            else{
-                if(temp[j].value != GS[i]){
-                    // Playing card in wrong value
-                    return false;
+        if(temp.size() > 0){
+            for(int j = 0; j < temp.size(); j++){
+                if(temp[j].wild){
+                    numWilds++;
                 }
+                else{
+                    if(temp[j].value != GS[i]){
+                        throw NotCorrectGroupException();
+                    }
+                }
+                cardNum++;
             }
-            cardNum++;
+
+            std::cout << numWilds << " " << cardNum << std::endl;
+
+            if(temp.size() < 3 || numWilds > (temp.size()/2)){
+                throw NotEnoughCardsException();
+            }
+
+            if(!(team->groups[i].dirty) && numWilds == 0 && temp.size() > 6){
+                clean = true;
+            }
         }
 
-        if(temp.size() < 3 || numWilds > (temp.size()/2)){
-            // Too many wilds or not enough cards (cards < 3)
-            return false;
-        }
-
-        if(!(team->groups[i].dirty) && numWilds == 0 && temp.size() > 6){
-            clean = true;
-        }
     }
 
     if(inFoot){
         if(cardNum == foot->cards.size()){
-            // Discard to end the game, cant have no cards left
-            return false;
+            throw DiscardEndsGameException();
         }
 
         if((cardNum == foot->cards.size() - 1) && !clean){
-            // Cannot end the game without a clean book
-            return false;
+            throw NoCleanBookException();
         }
     }
 
     vector<Card> toRemove;
+
     for(int i = 0; i < 11; i++){
         for(int j = 0; j < c[i].size(); j++){
-            team->groups[i].cards.push_back(c[i][j]);
             toRemove.push_back(c[i][j]);
-            if(c[i][j].wild){
-                team->groups[i].dirty = true;
-            }
         }
     }
-
-
 
     if(inFoot){
         foot->remove(toRemove);
@@ -122,6 +120,15 @@ bool Player::play(vector<Card>* c){
         hand->remove(toRemove);
         if(hand->cards.size() == 0){
             inFoot = true;
+        }
+    }
+
+    for(int i = 0; i < 11; i++){
+        for(int j = 0; j < c[i].size(); j++){
+            team->groups[i].cards.push_back(c[i][j]);
+            if(c[i][j].wild){
+                team->groups[i].dirty = true;
+            }
         }
     }
     return true;

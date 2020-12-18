@@ -17,3 +17,33 @@ struct CardDoesNotExistException : public std::exception{
         return "Card Does Not Exist Exception: The card you have selected does not exist. Check it and try again.";
     }
 };
+
+struct NotEnoughToMeldExcpetion : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
+
+struct NotCorrectGroupException : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
+
+struct NotEnoughCardsException : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
+
+struct DiscardEndsGameException : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
+
+struct NoCleanBookException : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
