@@ -5,18 +5,22 @@ import java.util.List;
 
 public class Data {
 	public static ArrayList<Card> hand;
+	public static ArrayList<Card> pile;
 	public static ArrayList<ArrayList<Card>> playedGroups = new ArrayList<ArrayList<Card>>();
 	public static ArrayList<ArrayList<Card>> plannedGroups = new ArrayList<ArrayList<Card>>();
 	public static int handIndex = 0;
-	public static int phase = 3;
+	public static int phase = 1;
 	public static Card Queued;
 	public static int QueuedIndex;
 	public static boolean IsQueued;
+	public static boolean discardQueued;
 	
 	public static void InitData() {
 		hand = new ArrayList<Card>();
+		pile = new ArrayList<Card>();
 		IsQueued = false;
 		Queued = new Card(0, 0, 0);
+		discardQueued = false;
 		
 		for(int i = 0; i < 11; i++) {
 			ArrayList<Card> s = new ArrayList<Card>();
@@ -26,6 +30,10 @@ public class Data {
 			plannedGroups.add(t);
 		}
 		
+		pile.add(new Card(3, 0, 0));
+		pile.add(new Card(3, 1, 0));
+		pile.add(new Card(4, 3, 0));
+		pile.add(new Card(11, 0, 0));
 		
 		
 		// Test hand
