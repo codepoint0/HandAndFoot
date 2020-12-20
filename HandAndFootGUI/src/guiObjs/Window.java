@@ -20,6 +20,8 @@ public class Window {
 	
 	CardOrganizer c = new CardOrganizer();
 	
+	BufferedImage image;
+	
 	// FRAMES
 	protected static JFrame frame;
 	protected static JPanel panel;
@@ -28,7 +30,6 @@ public class Window {
 	// BUTTONS
 	protected static JButton button1;
 	protected static JButton button2;
-	
 	JButton play;
 	JButton discard;
 	JButton pile;
@@ -39,15 +40,12 @@ public class Window {
 	JButton[] panelButtons = new JButton[12];
 	JButton[] groupButtons = new JButton[10];
 	
-	BufferedImage image;
 	JLabel cardPanel;
 	JLabel groupPanel;
 	JLabel discardBorder;
 	JLabel discardPile;
 	
-	
-	int[] ValidPlays = {1,4,5,6,7,8,9,10,11,12,13};
-	
+	int[] ValidPlays = {1,4,5,6,7,8,9,10,11,12,13};	
 	String[][] pictureLocations = new String[4][13];
 	String[] suitLocations = {"res/images/Club.png", "res/images/Heart.png", 
 			"res/images/Diamond.png", "res/images/Spade.png"};
@@ -65,6 +63,82 @@ public class Window {
 		panel.setSize(1700, 950);
 		panel.setBackground(new Color(153,221,255));
 		
+		CreatePanelButtons();
+		
+    	try {
+    	    image = ImageIO.read(new File("res/images/Wreath.png"));
+    	    JLabel wreath = new JLabel(new ImageIcon(image));
+    		wreath.setSize(1000, 400);
+    		wreath.setLocation(350, 90);
+    	    panel.add(wreath);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+		
+		
+    	try {
+    	    image = ImageIO.read(new File("res/images/CardPanel.png"));
+    	    cardPanel = new JLabel(new ImageIcon(image));
+    	    cardPanel.setSize(1500, 210);
+    	    cardPanel.setLocation(100, 690);
+    	    panel.add(cardPanel);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+    	
+    	try {
+    	    image = ImageIO.read(new File("res/images/GroupPanel.png"));
+    	    groupPanel = new JLabel(new ImageIcon(image));
+    	    groupPanel.setSize(1150, 140);
+    	    groupPanel.setLocation(275, 495);
+    	    panel.add(groupPanel);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+    	
+    	try {
+    	    image = ImageIO.read(new File("res/images/Discard.png"));
+    	    discardBorder = new JLabel(new ImageIcon(image));
+    	    discardBorder.setSize(1700, 900);
+    	    discardBorder.setLocation(0, 0);
+    	    discardBorder.setVisible(false);
+    	    panel.add(discardBorder);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+    	
+       	try {
+    	    image = ImageIO.read(new File("res/images/DiscardPile.png"));
+    	    discardPile = new JLabel(new ImageIcon(image));
+    	    discardPile.setSize(85, 120);
+    	    discardPile.setLocation(802, 200);
+    	    panel.add(discardPile);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+    	
+    	for(int i = 0; i < 13; i++) {
+    		pictureLocations[0][i] = "res/images/Black" + (i+1) + ".png";
+    		pictureLocations[3][i] = "res/images/Black" + (i+1) + ".png";
+    		pictureLocations[1][i] = "res/images/Red" + (i+1) + ".png";
+    		pictureLocations[2][i] = "res/images/Red" + (i+1) + ".png";
+    	}
+    	
+    	
+		ServerUpdate();
+    	// frame Code
+		frame = new JFrame("My First GUI");
+		frame.setLayout(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(1700, 950);
+		frame.add(panel);
+		//frame.pack();
+		frame.setVisible(true);
+		frame.validate();
+  }
+
+
+	private void CreatePanelButtons() {
 		play = new JButton();
 		play.setText("Play");
 		play.setSize(100,30);
@@ -205,18 +279,6 @@ public class Window {
 		currentCards = new ArrayList<JLabel>();
 		currentGroups = new ArrayList<JLabel>();
 		currentPile = new ArrayList<JLabel>();
-		
-		
-
-    	try {
-    	    image = ImageIO.read(new File("res/images/Wreath.png"));
-    	    JLabel wreath = new JLabel(new ImageIcon(image));
-    		wreath.setSize(1000, 400);
-    		wreath.setLocation(350, 90);
-    	    panel.add(wreath);
-    	} catch (IOException ex) {
-    	    ex.printStackTrace();
-    	}
     	
 		// panelButtons
 		pile = new JButton();
@@ -385,68 +447,7 @@ public class Window {
 			
 			panel.add(groupButton);
 		}
-		
-		
-    	try {
-    	    image = ImageIO.read(new File("res/images/CardPanel.png"));
-    	    cardPanel = new JLabel(new ImageIcon(image));
-    	    cardPanel.setSize(1500, 210);
-    	    cardPanel.setLocation(100, 690);
-    	    panel.add(cardPanel);
-    	} catch (IOException ex) {
-    	    ex.printStackTrace();
-    	}
-    	
-    	try {
-    	    image = ImageIO.read(new File("res/images/GroupPanel.png"));
-    	    groupPanel = new JLabel(new ImageIcon(image));
-    	    groupPanel.setSize(1150, 140);
-    	    groupPanel.setLocation(275, 495);
-    	    panel.add(groupPanel);
-    	} catch (IOException ex) {
-    	    ex.printStackTrace();
-    	}
-    	
-    	try {
-    	    image = ImageIO.read(new File("res/images/Discard.png"));
-    	    discardBorder = new JLabel(new ImageIcon(image));
-    	    discardBorder.setSize(1700, 900);
-    	    discardBorder.setLocation(0, 0);
-    	    discardBorder.setVisible(false);
-    	    panel.add(discardBorder);
-    	} catch (IOException ex) {
-    	    ex.printStackTrace();
-    	}
-    	
-       	try {
-    	    image = ImageIO.read(new File("res/images/DiscardPile.png"));
-    	    discardPile = new JLabel(new ImageIcon(image));
-    	    discardPile.setSize(85, 120);
-    	    discardPile.setLocation(802, 200);
-    	    panel.add(discardPile);
-    	} catch (IOException ex) {
-    	    ex.printStackTrace();
-    	}
-    	
-    	for(int i = 0; i < 13; i++) {
-    		pictureLocations[0][i] = "res/images/Black" + (i+1) + ".png";
-    		pictureLocations[3][i] = "res/images/Black" + (i+1) + ".png";
-    		pictureLocations[1][i] = "res/images/Red" + (i+1) + ".png";
-    		pictureLocations[2][i] = "res/images/Red" + (i+1) + ".png";
-    	}
-    	
-    	
-		ServerUpdate();
-    	// frame Code
-		frame = new JFrame("My First GUI");
-		frame.setLayout(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(1700, 950);
-		frame.add(panel);
-		//frame.pack();
-		frame.setVisible(true);
-		frame.validate();
-  }
+	}
     
     
     public void ServerUpdate() {
@@ -467,58 +468,18 @@ public class Window {
     	
     	for(int i = Data.handIndex; i < Math.min(Data.handIndex+10, Data.hand.size()); i++) {
     		if(Data.hand.get(i).suit != -1) {
-    			
-    			JLabel num = new JLabel();
-    	    	try {
-    	    	    image = ImageIO.read(new File(
-    	    	    		pictureLocations[Data.hand.get(i).suit][Data.hand.get(i).value - 1]));
-    	    	    num = new JLabel(new ImageIcon(image));
-    	    	    num.setSize(60, 60);
-    	    	    num.setLocation(45+(150*(i-Data.handIndex)), 30);
-    	    	    cardPanel.add(num);
-    	    	    currentCards.add(num);
-    	    	} catch (IOException ex) {
-    	    	    ex.printStackTrace();
-    	    	}
-    			JLabel suit = new JLabel();
-    	    	try {
-    	    	    image = ImageIO.read(new File(
-    	    	    		suitLocations[Data.hand.get(i).suit]));
-    	    	    suit = new JLabel(new ImageIcon(image));
-    	    	    suit.setSize(60, 60);
-    	    	    suit.setLocation(45+(150*(i-Data.handIndex)), 120);
-    	    	    cardPanel.add(suit);
-    	    	    currentCards.add(suit);
-    	    	} catch (IOException ex) {
-    	    	    ex.printStackTrace();
-    	    	}
+    			CreateNumberForCard(45+(150*(i-Data.handIndex)), 30, 
+    					Data.hand.get(i).suit, 
+    					Data.hand.get(i).value - 1, 
+    					currentCards, cardPanel, false);
+    			CreateSuitForCard(45+(150*(i-Data.handIndex)), 120, Data.hand.get(i).suit, currentCards, cardPanel);
     		}
     		else {
     			if(Data.hand.get(i).value == 52) {
-        			JLabel num = new JLabel();
-        	    	try {
-        	    	    image = ImageIO.read(new File("res/images/Black52.png"));
-        	    	    num = new JLabel(new ImageIcon(image));
-        	    	    num.setSize(60, 60);
-        	    	    num.setLocation(45+(150*(i-Data.handIndex)), 75);
-        	    	    cardPanel.add(num);
-        	    	    currentCards.add(num);
-        	    	} catch (IOException ex) {
-        	    	    ex.printStackTrace();
-        	    	}
+        			CreateNumberForCard(45+(150*(i-Data.handIndex)), 75, 52, - 1, currentCards, cardPanel, true);
     			}
     			else {
-    				JLabel num = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File("res/images/Red53.png"));
-	    	    	    num = new JLabel(new ImageIcon(image));
-	    	    	    num.setSize(60, 60);
-	    	    	    num.setLocation(45+(150*(i-Data.handIndex)), 75);
-	    	    	    cardPanel.add(num);
-	    	    	    currentCards.add(num);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
+    				CreateNumberForCard(45+(150*(i-Data.handIndex)), 75, 53, - 1, currentCards, cardPanel, true);
     			}
     		}
     	}
@@ -531,91 +492,17 @@ public class Window {
     	currentPile.clear();
     	if(Data.pile.size() > 0) {
     		if(Data.pile.get(Data.pile.size() - 1).value < 52) {
-        		JLabel num = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File(
-            	    		pictureLocations
-            	    		[Data.pile.get(Data.pile.size() - 1).suit]
-            	    				[Data.pile.get(Data.pile.size() - 1).value - 1]));
-            	    num = new JLabel(new ImageIcon(image));
-            	    num.setSize(60, 60);
-            	    num.setLocation(7,0);
-            	    discardPile.add(num);
-            	    currentPile.add(num);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
-        		JLabel suit = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File(
-            	    		suitLocations[Data.pile.get(Data.pile.size() - 1).suit]));
-            	    suit = new JLabel(new ImageIcon(image));
-            	    suit.setSize(60, 60);
-            	    suit.setLocation(7, 60);
-            	    discardPile.add(suit);
-            	    currentPile.add(suit);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
-        		JLabel stock = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File("res/images/CardStock.png"));
-            	    stock = new JLabel(new ImageIcon(image));
-            	    stock.setSize(85, 120);
-            	    stock.setLocation(0, 0);
-            	    discardPile.add(stock);
-            	    currentPile.add(stock);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
+        		CreateNumberForCard(7, 0, Data.pile.get(Data.pile.size() - 1).suit, Data.pile.get(Data.pile.size() - 1).value - 1, currentPile, discardPile, false);
+        		CreateSuitForCard(7, 60, Data.pile.get(Data.pile.size() - 1).suit, currentPile, discardPile);
+            	CreateCardStock(0, 0, currentPile, discardPile);
     		}
     		else if(Data.pile.get(Data.pile.size() - 1).value == 52) {
-        		JLabel num = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File("res/images/Black52.png"));
-            	    num = new JLabel(new ImageIcon(image));
-            	    num.setSize(60, 60);
-            	    num.setLocation(7,30);
-            	    discardPile.add(num);
-            	    currentPile.add(num);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
-        		JLabel stock = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File("res/images/CardStock.png"));
-            	    stock = new JLabel(new ImageIcon(image));
-            	    stock.setSize(85, 120);
-            	    stock.setLocation(0, 0);
-            	    discardPile.add(stock);
-            	    currentPile.add(stock);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
+    			CreateNumberForCard(7, 30, 52, -1, currentPile, discardPile, true);
+            	CreateCardStock(0, 0, currentPile, discardPile);
     		}
     		else {
-        		JLabel num = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File("res/images/Red53.png"));
-            	    num = new JLabel(new ImageIcon(image));
-            	    num.setSize(60, 60);
-            	    num.setLocation(7,30);
-            	    discardPile.add(num);
-            	    currentPile.add(num);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
-        		JLabel stock = new JLabel();
-            	try {
-            	    image = ImageIO.read(new File("res/images/CardStock.png"));
-            	    stock = new JLabel(new ImageIcon(image));
-            	    stock.setSize(85, 120);
-            	    stock.setLocation(0, 0);
-            	    discardPile.add(stock);
-            	    currentPile.add(stock);
-            	} catch (IOException ex) {
-            	    ex.printStackTrace();
-            	}
+    			CreateNumberForCard(7, 30, 53, -1, currentPile, discardPile, true);
+            	CreateCardStock(0, 0, currentPile, discardPile);
     		}
     	}
 	}
@@ -635,185 +522,41 @@ public class Window {
     		int m = Data.playedGroups.get(i).size();
     		if(n > 0) {
     			if(Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size()-1).value < 51) {
-	    			JLabel num = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File(
-	    	    	    		pictureLocations
-	    	    	    		[Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).suit]
-	    	    	    				[Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).value - 1]));
-	    	    	    num = new JLabel(new ImageIcon(image));
-	    	    	    num.setSize(60, 60);
-	    	    	    num.setLocation(17+(105*i), 0);
-	    	    	    groupPanel.add(num);
-	    	    	    currentGroups.add(num);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
-	    			JLabel suit = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File(
-	    	    	    		suitLocations
-	    	    	    		[Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).suit]));
-	    	    	    suit = new JLabel(new ImageIcon(image));
-	    	    	    suit.setSize(60, 60);
-	    	    	    suit.setLocation(17+(105*i), 60);
-	    	    	    groupPanel.add(suit);
-	    	    	    currentGroups.add(suit);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
-	    			JLabel stock = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-	    	    	    stock = new JLabel(new ImageIcon(image));
-	    	    	    stock.setSize(85, 120);
-	    	    	    stock.setLocation(10+(105*i), 10);
-	    	    	    groupPanel.add(stock);
-	    	    	    currentGroups.add(stock);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
+    				CreateNumberForCard(17+(105*i), 0, 
+    						Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).suit, 
+    						Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).value - 1, 
+    						currentGroups, groupPanel, false);
+    				CreateSuitForCard(17+(105*i), 60, Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).suit, currentGroups, groupPanel);
+	    	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
     			}
     			else {
     				if(Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size()-1).value == 52) {
-            			JLabel num = new JLabel();
-            	    	try {
-            	    	    image = ImageIO.read(new File("res/images/Black52.png"));
-            	    	    num = new JLabel(new ImageIcon(image));
-            	    	    num.setSize(60, 60);
-            	    	    num.setLocation(17+(105*i), 40);
-            	    	    groupPanel.add(num);
-            	    	    currentGroups.add(num);
-            	    	} catch (IOException ex) {
-            	    	    ex.printStackTrace();
-            	    	}
-    	    			JLabel stock = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-    	    	    	    stock = new JLabel(new ImageIcon(image));
-    	    	    	    stock.setSize(85, 120);
-    	    	    	    stock.setLocation(10+(105*i), 10);
-    	    	    	    groupPanel.add(stock);
-    	    	    	    currentGroups.add(stock);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
+        				CreateNumberForCard(17+(105*i), 40, 52, -1, currentGroups, groupPanel, true);
+            	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
         			}
         			else {
-        				JLabel num = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/Red53.png"));
-    	    	    	    num = new JLabel(new ImageIcon(image));
-    	    	    	    num.setSize(60, 60);
-    	    	    	    num.setLocation(17+(105*i), 40);
-    	    	    	    groupPanel.add(num);
-    	    	    	    currentGroups.add(num);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
-    	    			JLabel stock = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-    	    	    	    stock = new JLabel(new ImageIcon(image));
-    	    	    	    stock.setSize(85, 120);
-    	    	    	    stock.setLocation(10+(105*i), 10);
-    	    	    	    groupPanel.add(stock);
-    	    	    	    currentGroups.add(stock);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
+        				CreateNumberForCard(17+(105*i), 40, 53, -1, currentGroups, groupPanel, true);
+    	    	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
         			}
     			}
     		}
     		else if(m > 0) {
     			if(Data.playedGroups.get(i).get(Data.playedGroups.get(i).size()-1).value < 51) {
-	    			JLabel num = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File(
-	    	    	    		pictureLocations
-	    	    	    		[Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).suit]
-	    	    	    				[Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).value - 1]));
-	    	    	    num = new JLabel(new ImageIcon(image));
-	    	    	    num.setSize(60, 60);
-	    	    	    num.setLocation(17+(105*i), 0);
-	    	    	    groupPanel.add(num);
-	    	    	    currentGroups.add(num);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
-	    			JLabel suit = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File(
-	    	    	    		suitLocations
-	    	    	    		[Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).suit]));
-	    	    	    suit = new JLabel(new ImageIcon(image));
-	    	    	    suit.setSize(60, 60);
-	    	    	    suit.setLocation(17+(105*i), 60);
-	    	    	    groupPanel.add(suit);
-	    	    	    currentGroups.add(suit);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
-	    			JLabel stock = new JLabel();
-	    	    	try {
-	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-	    	    	    stock = new JLabel(new ImageIcon(image));
-	    	    	    stock.setSize(85, 120);
-	    	    	    stock.setLocation(10+(105*i), 10);
-	    	    	    groupPanel.add(stock);
-	    	    	    currentGroups.add(stock);
-	    	    	} catch (IOException ex) {
-	    	    	    ex.printStackTrace();
-	    	    	}
+    				CreateNumberForCard(17+(105*i), 0, 
+    						Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).suit, 
+    						Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).value - 1, 
+    						currentGroups, groupPanel, false);
+    				CreateSuitForCard(17+(105*i), 60, Data.playedGroups.get(i).get(Data.playedGroups.get(i).size() - 1).suit, currentGroups, groupPanel);
+	    	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
     			}
     			else {
     				if(Data.playedGroups.get(i).get(Data.playedGroups.get(i).size()-1).value == 52) {
-            			JLabel num = new JLabel();
-            	    	try {
-            	    	    image = ImageIO.read(new File("res/images/Black52.png"));
-            	    	    num = new JLabel(new ImageIcon(image));
-            	    	    num.setSize(60, 60);
-            	    	    num.setLocation(17+(105*i), 40);
-            	    	    groupPanel.add(num);
-            	    	    currentGroups.add(num);
-            	    	} catch (IOException ex) {
-            	    	    ex.printStackTrace();
-            	    	}
-    	    			JLabel stock = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-    	    	    	    stock = new JLabel(new ImageIcon(image));
-    	    	    	    stock.setSize(85, 120);
-    	    	    	    stock.setLocation(10+(105*i), 10);
-    	    	    	    groupPanel.add(stock);
-    	    	    	    currentGroups.add(stock);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
+    					CreateNumberForCard(17+(105*i), 40, 52, -1, currentGroups, groupPanel, true);
+            	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
         			}
         			else {
-        				JLabel num = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/Red53.png"));
-    	    	    	    num = new JLabel(new ImageIcon(image));
-    	    	    	    num.setSize(60, 60);
-    	    	    	    num.setLocation(17+(105*i), 40);
-    	    	    	    groupPanel.add(num);
-    	    	    	    currentGroups.add(num);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
-    	    			JLabel stock = new JLabel();
-    	    	    	try {
-    	    	    	    image = ImageIO.read(new File("res/images/CardStock.png"));
-    	    	    	    stock = new JLabel(new ImageIcon(image));
-    	    	    	    stock.setSize(85, 120);
-    	    	    	    stock.setLocation(10+(105*i), 10);
-    	    	    	    groupPanel.add(stock);
-    	    	    	    currentGroups.add(stock);
-    	    	    	} catch (IOException ex) {
-    	    	    	    ex.printStackTrace();
-    	    	    	}
+        				CreateNumberForCard(17+(105*i), 40, 53, -1, currentGroups, groupPanel, true);
+    	    	    	CreateCardStock(10+(105*i), 10, currentGroups, groupPanel);
         			}
     			}
     			
@@ -824,6 +567,73 @@ public class Window {
     public void DrawPlayers() {
     	
     }
+    
+	private void CreateNumberForCard(int x, int y, int locationInFirstArray, int locationInSecondArray, ArrayList<JLabel> deleteFrom, JLabel labelToAddTo, boolean Joker) {
+		if(Joker) {
+			JLabel num = new JLabel();
+			String RorB;
+			if(locationInFirstArray == 52) {
+				RorB = "Black";
+			}
+			else {
+				RorB = "Red";
+			}
+	    	try {
+	    	    image = ImageIO.read(new File("res/images/"+ RorB + locationInFirstArray +".png"));
+	    	    num = new JLabel(new ImageIcon(image));
+	    	    num.setSize(60, 60);
+	    	    num.setLocation(x, y);
+	    	    deleteFrom.add(num);
+	    	    labelToAddTo.add(num);
+	    	} catch (IOException ex) {
+	    	    ex.printStackTrace();
+	    	}
+		}
+		else {
+			JLabel num = new JLabel();
+			try {
+			    image = ImageIO.read(new File(
+			    		pictureLocations[locationInFirstArray][locationInSecondArray]));
+			    num = new JLabel(new ImageIcon(image));
+			    num.setSize(60, 60);
+			    num.setLocation(x,y);
+			    deleteFrom.add(num);
+			    labelToAddTo.add(num);
+			} catch (IOException ex) {
+			    ex.printStackTrace();
+			}
+		}
+	}
+	
+	private void CreateSuitForCard(int x, int y, int locationInArray, ArrayList<JLabel> deleteFrom, JLabel labelToAddTo) {
+		JLabel suit = new JLabel();
+    	try {
+    	    image = ImageIO.read(new File(
+    	    		suitLocations
+    	    		[locationInArray]));
+    	    suit = new JLabel(new ImageIcon(image));
+    	    suit.setSize(60, 60);
+    	    suit.setLocation(x, y);
+    	    deleteFrom.add(suit);
+    	    labelToAddTo.add(suit);
+    	} catch (IOException ex) {
+    	    ex.printStackTrace();
+    	}
+	}
+    
+	private void CreateCardStock(int x, int y, ArrayList<JLabel> deleteFrom, JLabel labelToAddTo) {
+		JLabel stock = new JLabel();
+		try {
+		    image = ImageIO.read(new File("res/images/CardStock.png"));
+		    stock = new JLabel(new ImageIcon(image));
+		    stock.setSize(85, 120);
+		    stock.setLocation(x, y);
+		    deleteFrom.add(stock);
+		    labelToAddTo.add(stock);
+		} catch (IOException ex) {
+		    ex.printStackTrace();
+		}
+	}
     
     public void CardPress(int i) {
     	if(Data.phase == 3) {
@@ -871,7 +681,6 @@ public class Window {
         		panel.repaint();
     		}
     	}
-    	
     }
     
     
