@@ -12,8 +12,25 @@
 */
 
 #include <sstream>
+#include <unistd.h> 
+#include <stdio.h> 
+#include <sys/socket.h> 
+#include <stdlib.h> 
+#include <netinet/in.h> 
+#include <string.h> 
+#include <string>
+#include <cstdlib>
+#include <thread>
+#include <mutex> 
+#include <iostream>
+#include <exception>
+#define PORT 8080 
 
 #include "game.h"
+
+struct Client{
+    int socket;
+};
 
 class Controller{
     private:
@@ -24,6 +41,15 @@ class Controller{
         ~Controller();
 
         // Determines the entire game.
-        int play(stringstream& ss);
+        void play();
+        std::string Read(int i);
+        int SetUpServer();
+        void CountDown(int threadid);
+        void ListenForNewClients();
+        void SendPlayerInfo(int PlayerId, std::string message);
+        void SendAllInfo(std::string message);
+        std::string StringHand(int playerID, vector<Player*> turn);
+        std::string StringGroup(int PlayerID, vector<Player*> turn);
 };
+
 #endif

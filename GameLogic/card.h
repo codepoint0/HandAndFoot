@@ -65,8 +65,7 @@ struct Group{
 */
 class Board{
     private:
-        deque<Card> wreath;
-        deque<Card> pile;
+        
     public:
         
         // Randomizes the wreath at the start and
@@ -84,6 +83,8 @@ class Board{
 
         // Peeks at the top card of the pile
         Card pilePeek();
+        deque<Card> wreath;
+        deque<Card> pile;
 };
 
 /*

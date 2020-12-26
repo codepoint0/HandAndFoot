@@ -102,7 +102,9 @@ bool Player::play(vector<Card>* c){
             // If therer are not 3 cards in the pile OR there are more wilds
             // than the number card then not valid
             if(temp.size() < 3 || numWilds > (temp.size()/2)){
-                throw NotEnoughCardsException();
+                if(!team->meld && team->groups[i].cards.empty()){
+                     throw NotEnoughCardsException();
+                }
             }
 
             if(!(team->groups[i].dirty) && numWilds == 0 && temp.size() > 6){

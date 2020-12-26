@@ -1,3 +1,4 @@
+
 // Server side C/C++ program to demonstrate Socket programming 
 #include <unistd.h> 
 #include <stdio.h> 
@@ -10,7 +11,6 @@
 #include <thread>
 #include <mutex> 
 #include <iostream>
-#include <exception>
 #define PORT 8080 
 
 struct Client{
@@ -96,8 +96,12 @@ void ListenForNewClients(){
         if(threads[ThreadID].joinable()){
             threads[ThreadID].join();
         }
-
-        threads[ThreadID] = std::thread(CountUp,ThreadID);
+        
+        if(ThreadID == 1){
+            threads[ThreadID] = std::thread(CountDown,ThreadID);
+        }else{
+            threads[ThreadID] = std::thread(CountUp,ThreadID);
+        }
         
         clients[ThreadID] = c;
         
@@ -107,26 +111,28 @@ void ListenForNewClients(){
 
 void CountUp(int threadid){
     std::cout << "Operating on Threadid " << (long)threadid << std::endl;
-    std::cout << "HERE" << std::endl;
-
+    while(true){
         mtx.lock();
         std::fill_n(buffer, 1024, 0);
-
-        valread = read( clients[threadid].socket , buffer, 1024);
+        valread = read( clients[threadid].socket , buffer, 1024); 
         std::cout << threadid << ":" << buffer << std::endl;
         std::string s = buffer;
-        std::string sToSend = "test";
+        int value = std::stoi(s);
+        if(value == -1){
+            mtx.unlock();
+            break;
+        }
+        value++;
+        std::string sToSend = std::to_string(value);
         send(clients[threadid].socket , sToSend.c_str() , strlen(sToSend.c_str()) , 0 ); 
-
         std::fill_n(buffer, 1024, 0);
         mtx.unlock();
-
+    }
     ThreadID--;
 }
 
 void CountDown(int threadid){
     std::cout << "Operating on Threadid " << (long)threadid << std::endl;
-        
     while(true){
         mtx.lock();
         std::fill_n(buffer, 1024, 0);
