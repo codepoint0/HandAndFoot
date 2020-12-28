@@ -21,7 +21,7 @@ import java.util.Observer;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class Window1700 extends Window implements Runnable{
+public class Window1700 extends Window implements Runnable {
 
 	CardOrganizer c = new CardOrganizer();
 
@@ -43,6 +43,7 @@ public class Window1700 extends Window implements Runnable{
 	JLabel orange;
 	JLabel lightRed;
 	JLabel darkRed;
+	JLabel ScoreBoard;
 
 	// BUTTONS
 	JButton play;
@@ -59,13 +60,17 @@ public class Window1700 extends Window implements Runnable{
 
 	int[] ValidPlays = { 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
 	String[][] pictureLocations = new String[4][13];
-	String[] suitLocations = { "res/images/" + Data.Resolution + "/Club.png", "res/images/" + Data.Resolution + "/Heart.png", "res/images/" + Data.Resolution + "/Diamond.png",
+	String[] suitLocations = { "res/images/" + Data.Resolution + "/Club.png",
+			"res/images/" + Data.Resolution + "/Heart.png", "res/images/" + Data.Resolution + "/Diamond.png",
 			"res/images/" + Data.Resolution + "/Spade.png" };
 
 	ArrayList<JLabel> currentCards;
 	ArrayList<JLabel> currentGroups;
 	ArrayList<JLabel> currentPile;
 	ArrayList<JLabel> currentPlayers;
+	ArrayList<JLabel> currentScores;
+	ArrayList<JLabel> cleanBooks;
+	ArrayList<JLabel> dirtyBooks;
 
 	@Override
 	public void CreateWindow() {
@@ -82,6 +87,9 @@ public class Window1700 extends Window implements Runnable{
 		currentGroups = new ArrayList<JLabel>();
 		currentPile = new ArrayList<JLabel>();
 		currentPlayers = new ArrayList<JLabel>();
+		currentScores = new ArrayList<JLabel>();
+		cleanBooks = new ArrayList<JLabel>();
+		dirtyBooks = new ArrayList<JLabel>();
 
 		CreatePanelButtons();
 
@@ -94,6 +102,7 @@ public class Window1700 extends Window implements Runnable{
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+
 
 		try {
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/LightGreen.png"));
@@ -279,6 +288,33 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 		}
+		
+		for(int i = 0; i < 11; i++) {
+			try {
+				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/CleanBook.png"));
+				JLabel clean = new JLabel(new ImageIcon(image));
+				clean.setSize(95, 130);
+				clean.setLocation(5 + (105 * i), 20);
+				clean.setVisible(false);
+				cleanBooks.add(clean);
+				groupPanel.add(clean);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			
+			try {
+				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/DirtyBook.png"));
+				JLabel dirty = new JLabel(new ImageIcon(image));
+				dirty.setSize(95, 130);
+				dirty.setLocation(5 + (105 * i), 20);
+				dirty.setVisible(false);
+				dirtyBooks.add(dirty);
+				groupPanel.add(dirty);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+			
+		}
 
 		for (int i = 0; i < 13; i++) {
 			pictureLocations[0][i] = "res/images/" + Data.Resolution + "/Black" + (i + 1) + ".png";
@@ -286,6 +322,13 @@ public class Window1700 extends Window implements Runnable{
 			pictureLocations[1][i] = "res/images/" + Data.Resolution + "/Red" + (i + 1) + ".png";
 			pictureLocations[2][i] = "res/images/" + Data.Resolution + "/Red" + (i + 1) + ".png";
 		}
+
+		ScoreBoard = new JLabel();
+		ScoreBoard.setSize(300, 300);
+		ScoreBoard.setLocation(1500, 0);
+		panel.add(ScoreBoard);
+		
+		
 
 		ServerUpdate();
 
@@ -297,7 +340,7 @@ public class Window1700 extends Window implements Runnable{
 
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		frame.add(panel);
 		// frame.pack();
 		frame.setVisible(true);
@@ -314,18 +357,6 @@ public class Window1700 extends Window implements Runnable{
 		play.setLocation(480, 653);
 		play.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
-			}
-
-			public void mouseReleased(MouseEvent me) {
-			}
-
-			public void mouseEntered(MouseEvent me) {
-			}
-
-			public void mouseExited(MouseEvent me) {
-			}
-
-			public void mouseClicked(MouseEvent me) {
 				if (Data.phase == 2) {
 					play.setEnabled(false);
 					discard.setEnabled(false);
@@ -338,6 +369,19 @@ public class Window1700 extends Window implements Runnable{
 					cancel.setVisible(true);
 				}
 			}
+
+			public void mouseReleased(MouseEvent me) {
+			}
+
+			public void mouseEntered(MouseEvent me) {
+			}
+
+			public void mouseExited(MouseEvent me) {
+			}
+
+			public void mouseClicked(MouseEvent me) {
+
+			}
 		});
 		panel.add(play);
 
@@ -348,6 +392,11 @@ public class Window1700 extends Window implements Runnable{
 		draw.setVisible(false);
 		draw.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
+				if (Data.phase == 1) {
+					draw.setEnabled(false);
+					draw.setVisible(false);
+					Data.th.SendMessage("D");
+				}
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -360,11 +409,7 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				if (Data.phase == 1) {
-					draw.setEnabled(false);
-					draw.setVisible(false);
-					Data.th.SendMessage("D");
-				}
+
 			}
 		});
 		panel.add(draw);
@@ -375,18 +420,6 @@ public class Window1700 extends Window implements Runnable{
 		discard.setLocation(1120, 653);
 		discard.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
-			}
-
-			public void mouseReleased(MouseEvent me) {
-			}
-
-			public void mouseEntered(MouseEvent me) {
-			}
-
-			public void mouseExited(MouseEvent me) {
-			}
-
-			public void mouseClicked(MouseEvent me) {
 				if (Data.phase == 2) {
 					play.setEnabled(true);
 					discard.setEnabled(true);
@@ -408,19 +441,10 @@ public class Window1700 extends Window implements Runnable{
 					discardBorder.setVisible(false);
 					play.setEnabled(true);
 					discard.setEnabled(false);
-					Data.th.SendMessage(Data.pile.get(Data.pile.size()-1).value + " " + Data.pile.get(Data.pile.size()-1).suit + " " + Data.pile.get(Data.pile.size()-1).deckID);
+					Data.th.SendMessage(
+							Data.pile.get(Data.pile.size() - 1).value + " " + Data.pile.get(Data.pile.size() - 1).suit
+									+ " " + Data.pile.get(Data.pile.size() - 1).deckID);
 				}
-			}
-		});
-		panel.add(discard);
-
-		submit = new JButton();
-		submit.setText("Submit");
-		submit.setSize(100, 30);
-		submit.setLocation(480, 653);
-		submit.setVisible(false);
-		submit.addMouseListener(new MouseListener() {
-			public void mousePressed(MouseEvent me) {
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -433,6 +457,17 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
+			}
+		});
+		panel.add(discard);
+
+		submit = new JButton();
+		submit.setText("Submit");
+		submit.setSize(100, 30);
+		submit.setLocation(480, 653);
+		submit.setVisible(false);
+		submit.addMouseListener(new MouseListener() {
+			public void mousePressed(MouseEvent me) {
 				if (Data.phase == 3) {
 					Data.th.SendMessage(Pipe());
 					play.setEnabled(true);
@@ -445,6 +480,18 @@ public class Window1700 extends Window implements Runnable{
 					cancel.setVisible(false);
 				}
 			}
+
+			public void mouseReleased(MouseEvent me) {
+			}
+
+			public void mouseEntered(MouseEvent me) {
+			}
+
+			public void mouseExited(MouseEvent me) {
+			}
+
+			public void mouseClicked(MouseEvent me) {
+			}
 		});
 		panel.add(submit);
 
@@ -455,6 +502,17 @@ public class Window1700 extends Window implements Runnable{
 		cancel.setVisible(false);
 		cancel.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
+				if (Data.phase == 3) {
+					cancel();
+					play.setEnabled(true);
+					discard.setEnabled(true);
+					play.setVisible(true);
+					discard.setVisible(true);
+					submit.setEnabled(false);
+					cancel.setEnabled(false);
+					submit.setVisible(false);
+					cancel.setVisible(false);
+				}
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -467,17 +525,6 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				if (Data.phase == 3) {
-					cancel();
-					play.setEnabled(true);
-					discard.setEnabled(true);
-					play.setVisible(true);
-					discard.setVisible(true);
-					submit.setEnabled(false);
-					cancel.setEnabled(false);
-					submit.setVisible(false);
-					cancel.setVisible(false);
-				}
 			}
 		});
 		panel.add(cancel);
@@ -497,6 +544,8 @@ public class Window1700 extends Window implements Runnable{
 					pile.setContentAreaFilled(true);
 					pile.setBorderPainted(true);
 				}
+				draw.setVisible(false);
+				PilePress();
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -514,8 +563,7 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				draw.setVisible(false);
-				PilePress();
+
 			}
 		});
 
@@ -524,7 +572,7 @@ public class Window1700 extends Window implements Runnable{
 		for (int i = 1; i < Data.players.size(); i++) {
 			if (Data.players.size() == 4) {
 				JButton playerButton = new JButton();
-				playerButton.setName(""+i);
+				playerButton.setName("" + i);
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -546,10 +594,16 @@ public class Window1700 extends Window implements Runnable{
 				playerButton.setBorderPainted(false);
 				playerButton.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {
+						if (Data.phase != 5) {
 							playerButton.setOpaque(true);
 							playerButton.setContentAreaFilled(true);
 							playerButton.setBorderPainted(true);
+							Data.previousPhase = Data.phase;
+							Data.phase = 5;
+							back.setVisible(true);
+							Data.selectedPlayer = Integer.parseInt(playerButton.getName());
+							DrawGroups();
+							panel.repaint();
 						}
 					}
 
@@ -568,12 +622,7 @@ public class Window1700 extends Window implements Runnable{
 					}
 
 					public void mouseClicked(MouseEvent me) {
-						Data.previousPhase = Data.phase;
-						Data.phase = 5;
-						back.setVisible(true);
-						Data.selectedPlayer = Integer.parseInt(playerButton.getName());
-						DrawGroups();
-						panel.repaint();
+
 					}
 				});
 				currentPlayers.add(username);
@@ -581,7 +630,7 @@ public class Window1700 extends Window implements Runnable{
 				panel.add(username);
 			} else if (Data.players.size() == 6) {
 				JButton playerButton = new JButton();
-				playerButton.setName(""+i);
+				playerButton.setName("" + i);
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -609,10 +658,17 @@ public class Window1700 extends Window implements Runnable{
 				playerButton.setBorderPainted(false);
 				playerButton.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {
+						if (Data.phase != 5) {
 							playerButton.setOpaque(true);
 							playerButton.setContentAreaFilled(true);
 							playerButton.setBorderPainted(true);
+
+							Data.previousPhase = Data.phase;
+							Data.phase = 5;
+							Data.selectedPlayer = Integer.parseInt(playerButton.getName());
+							back.setVisible(true);
+							DrawGroups();
+							panel.repaint();
 						}
 					}
 
@@ -631,12 +687,7 @@ public class Window1700 extends Window implements Runnable{
 					}
 
 					public void mouseClicked(MouseEvent me) {
-						Data.previousPhase = Data.phase;
-						Data.phase = 5;
-						Data.selectedPlayer = Integer.parseInt(playerButton.getName());
-						back.setVisible(true);
-						DrawGroups();
-						panel.repaint();
+
 					}
 				});
 				currentPlayers.add(username);
@@ -646,7 +697,7 @@ public class Window1700 extends Window implements Runnable{
 
 			else if (Data.players.size() == 8) {
 				JButton playerButton = new JButton();
-				playerButton.setName(""+i);
+				playerButton.setName("" + i);
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -680,10 +731,16 @@ public class Window1700 extends Window implements Runnable{
 				playerButton.setBorderPainted(false);
 				playerButton.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {
+						if (Data.phase != 5) {
 							playerButton.setOpaque(true);
 							playerButton.setContentAreaFilled(true);
 							playerButton.setBorderPainted(true);
+							Data.previousPhase = Data.phase;
+							Data.phase = 5;
+							Data.selectedPlayer = Integer.parseInt(playerButton.getName());
+							back.setVisible(true);
+							DrawGroups();
+							panel.repaint();
 						}
 					}
 
@@ -702,14 +759,6 @@ public class Window1700 extends Window implements Runnable{
 					}
 
 					public void mouseClicked(MouseEvent me) {
-						if (Data.phase != 5) {
-							Data.previousPhase = Data.phase;
-							Data.phase = 5;
-							Data.selectedPlayer = Integer.parseInt(playerButton.getName());
-							back.setVisible(true);
-							DrawGroups();
-							panel.repaint();
-						}
 					}
 				});
 				currentPlayers.add(username);
@@ -728,6 +777,10 @@ public class Window1700 extends Window implements Runnable{
 		back.setText("Back");
 		back.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
+				Data.phase = Data.previousPhase;
+				back.setVisible(false);
+				DrawGroups();
+				panel.repaint();
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -740,10 +793,7 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				Data.phase = Data.previousPhase;
-				back.setVisible(false);
-				DrawGroups();
-				panel.repaint();
+
 			}
 		});
 		panel.add(back);
@@ -764,6 +814,9 @@ public class Window1700 extends Window implements Runnable{
 					leftButton.setContentAreaFilled(true);
 					leftButton.setBorderPainted(true);
 				}
+				Data.handIndex = Math.max(Data.handIndex - 10, 0);
+				DrawHand();
+				panel.repaint();
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -781,9 +834,7 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				Data.handIndex = Math.max(Data.handIndex - 10, 0);
-				DrawHand();
-				panel.repaint();
+
 			}
 		});
 		panelButtons[0] = leftButton;
@@ -803,6 +854,7 @@ public class Window1700 extends Window implements Runnable{
 						jButton.setContentAreaFilled(true);
 						jButton.setBorderPainted(true);
 					}
+					CardPress(Integer.parseInt(jButton.getName()));
 				}
 
 				public void mouseReleased(MouseEvent me) {
@@ -820,7 +872,7 @@ public class Window1700 extends Window implements Runnable{
 				}
 
 				public void mouseClicked(MouseEvent me) {
-					CardPress(Integer.parseInt(jButton.getName()));
+
 				}
 			});
 			panelButtons[i] = jButton;
@@ -841,6 +893,9 @@ public class Window1700 extends Window implements Runnable{
 					rightButton.setContentAreaFilled(true);
 					rightButton.setBorderPainted(true);
 				}
+				Data.handIndex = Math.min(Data.handIndex + 10, Data.hand.size() - 10);
+				DrawHand();
+				panel.repaint();
 			}
 
 			public void mouseReleased(MouseEvent me) {
@@ -858,9 +913,6 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				Data.handIndex = Math.min(Data.handIndex + 10, Data.hand.size() - 10);
-				DrawHand();
-				panel.repaint();
 			}
 		});
 		panelButtons[11] = rightButton;
@@ -881,6 +933,7 @@ public class Window1700 extends Window implements Runnable{
 						groupButton.setContentAreaFilled(true);
 						groupButton.setBorderPainted(true);
 					}
+					GroupPress(Integer.parseInt(groupButton.getName()));
 				}
 
 				public void mouseReleased(MouseEvent me) {
@@ -898,26 +951,25 @@ public class Window1700 extends Window implements Runnable{
 				}
 
 				public void mouseClicked(MouseEvent me) {
-					GroupPress(Integer.parseInt(groupButton.getName()));
 				}
 			});
 
 			panel.add(groupButton);
 		}
 	}
-	
-	public String Pipe() { 
+
+	public String Pipe() {
 		String ret = "";
-		for(int i = 0; i < 11; i++) {
+		for (int i = 0; i < 11; i++) {
 			ArrayList<Card> l = Data.plannedGroups.get(i);
-			for(int j = 0; j < l.size(); j++) {
+			for (int j = 0; j < l.size(); j++) {
 				Card c = l.get(j);
 				ret += c.value + " " + c.suit + " " + c.deckID;
-				if(j != l.size() - 1) {
-					ret+=",";
+				if (j != l.size() - 1) {
+					ret += ",";
 				}
 			}
-			ret+="|";
+			ret += "|";
 		}
 		return ret;
 	}
@@ -929,7 +981,8 @@ public class Window1700 extends Window implements Runnable{
 		DrawPile();
 		DrawGroups();
 		DrawPlayers();
-		if(Data.phase == 0) {
+		DrawScoreBoard();
+		if (Data.phase == 0) {
 			draw.setEnabled(false);
 			draw.setVisible(false);
 			submit.setEnabled(false);
@@ -941,7 +994,7 @@ public class Window1700 extends Window implements Runnable{
 			discard.setEnabled(false);
 			discard.setVisible(true);
 		}
-		if(Data.phase == 1) {
+		if (Data.phase == 1) {
 			draw.setEnabled(true);
 			draw.setVisible(true);
 			submit.setEnabled(false);
@@ -953,7 +1006,7 @@ public class Window1700 extends Window implements Runnable{
 			discard.setEnabled(false);
 			discard.setVisible(true);
 		}
-		if(Data.phase == 2) {
+		if (Data.phase == 2) {
 			draw.setEnabled(false);
 			draw.setVisible(false);
 			submit.setEnabled(false);
@@ -965,7 +1018,7 @@ public class Window1700 extends Window implements Runnable{
 			discard.setEnabled(true);
 			discard.setVisible(true);
 		}
-		if(Data.phase == 4) {
+		if (Data.phase == 4) {
 			draw.setEnabled(false);
 			draw.setVisible(false);
 			submit.setEnabled(false);
@@ -987,21 +1040,20 @@ public class Window1700 extends Window implements Runnable{
 		for (JLabel j : currentCards) {
 			cardPanel.remove(j);
 		}
-		if (!Data.foot) {
+		if (!Data.players.get(Data.userID).foot) {
 			foot.setVisible(false);
 		}
 		currentCards.clear();
 
 		Data.hand.sort(c);
 
-		if (Data.foot) {
+		if (Data.players.get(Data.userID).foot) {
 			foot.setVisible(true);
 		}
-		
-		if(Data.phase == 1) {
+
+		if (Data.phase == 1) {
 			draw.setVisible(true);
-		}
-		else {
+		} else {
 			draw.setVisible(false);
 		}
 
@@ -1083,13 +1135,20 @@ public class Window1700 extends Window implements Runnable{
 			}
 
 			for (int i = 0; i < 11; i++) {
+				dirtyBooks.get(i).setVisible(false);
+				cleanBooks.get(i).setVisible(false);
 				if (p.groups.get(i).size() > 0) {
 					JLabel groupCount = new JLabel();
-					if(Data.DirtyBook(p.groups.get(i))) {
+					if (Data.DirtyBook(p.groups.get(i))) {
 						groupCount.setForeground(Color.black);
-					}
-					else {
+						if(p.groups.get(i).size() > 6) {
+							dirtyBooks.get(i).setVisible(true);
+						}
+					} else {
 						groupCount.setForeground(Color.red);
+						if(p.groups.get(i).size() > 6) {
+							cleanBooks.get(i).setVisible(true);
+						}
 					}
 					groupCount.setText("" + p.groups.get(i).size());
 					groupCount.setSize(20, 25);
@@ -1123,11 +1182,18 @@ public class Window1700 extends Window implements Runnable{
 			for (int i = 0; i < 11; i++) {
 				JLabel groupCount = new JLabel();
 				int combined = Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size();
-				if(Data.DirtyBook(Data.plannedGroups.get(i)) || Data.DirtyBook(Data.playedGroups.get(i))) {
+				dirtyBooks.get(i).setVisible(false);
+				cleanBooks.get(i).setVisible(false);
+				if (Data.DirtyBook(Data.plannedGroups.get(i)) || Data.DirtyBook(Data.playedGroups.get(i))) {
 					groupCount.setForeground(Color.black);
-				}
-				else {
+					if(Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
+						dirtyBooks.get(i).setVisible(true);
+					}
+				} else {
 					groupCount.setForeground(Color.red);
+					if(Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
+						cleanBooks.get(i).setVisible(true);
+					}
 				}
 				groupCount.setText("" + combined);
 				groupCount.setSize(20, 25);
@@ -1190,6 +1256,25 @@ public class Window1700 extends Window implements Runnable{
 		currentPlayers.clear();
 		for (int i = 1; i < Data.players.size(); i++) {
 			if (Data.players.size() == 4) {
+				System.out.println("CURRENT TURN:" + (Data.CurrentTurn-Data.userID)%Data.players.size());
+				JLabel currentTurnFrame = new JLabel();
+				try {
+					image = ImageIO.read(new File("res/images/" + Data.Resolution + "/PlayIndicator.png"));
+					currentTurnFrame = new JLabel(new ImageIcon(image));
+					currentTurnFrame.setSize(75, 75);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+					currentTurnFrame.setLocation(25, 245);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+					currentTurnFrame.setLocation(810, 0);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+					currentTurnFrame.setLocation(1580, 320);
+				}
+				currentPlayers.add(currentTurnFrame);
+				panel.add(currentTurnFrame);
+				
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -1203,7 +1288,7 @@ public class Window1700 extends Window implements Runnable{
 				}
 				currentPlayers.add(username);
 				panel.add(username);
-				
+
 				if (Data.players.get((Data.userID + i) % Data.players.size()).foot) {
 					JLabel footIndicator = new JLabel();
 					try {
@@ -1225,6 +1310,7 @@ public class Window1700 extends Window implements Runnable{
 				}
 
 				JLabel cardCount = new JLabel();
+
 				cardCount.setText("" + Data.players.get((Data.userID + i) % Data.players.size()).cards);
 				cardCount.setSize(25, 20);
 				if (i == 1) {
@@ -1238,6 +1324,28 @@ public class Window1700 extends Window implements Runnable{
 				currentPlayers.add(cardCount);
 
 			} else if (Data.players.size() == 6) {
+				JLabel currentTurnFrame = new JLabel();
+				try {
+					image = ImageIO.read(new File("res/images/" + Data.Resolution + "/PlayIndicator.png"));
+					currentTurnFrame = new JLabel(new ImageIcon(image));
+					currentTurnFrame.setSize(75, 75);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+					currentTurnFrame.setLocation(25, 345);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+					currentTurnFrame.setLocation(25, 145);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+					currentTurnFrame.setLocation(810, 0);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 4) {
+					currentTurnFrame.setLocation(1595, 145);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 5) {
+					currentTurnFrame.setLocation(1595, 420);
+				}
+				currentPlayers.add(currentTurnFrame);
+				panel.add(currentTurnFrame);
+				
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -1249,13 +1357,13 @@ public class Window1700 extends Window implements Runnable{
 				} else if (i == 3) {
 					username.setLocation(800, 75);
 				} else if (i == 4) {
-					username.setLocation(1585, 225);
+					username.setLocation(1580, 225);
 				} else if (i == 5) {
-					username.setLocation(1585, 425);
+					username.setLocation(1580, 425);
 				}
 				panel.add(username);
 				currentPlayers.add(username);
-				
+
 				if (Data.players.get((Data.userID + i) % Data.players.size()).foot) {
 					JLabel footIndicator = new JLabel();
 					try {
@@ -1298,6 +1406,32 @@ public class Window1700 extends Window implements Runnable{
 				currentPlayers.add(cardCount);
 
 			} else if (Data.players.size() == 8) {
+				JLabel currentTurnFrame = new JLabel();
+				try {
+					image = ImageIO.read(new File("res/images/" + Data.Resolution + "/PlayIndicator.png"));
+					currentTurnFrame = new JLabel(new ImageIcon(image));
+					currentTurnFrame.setSize(75, 75);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+					currentTurnFrame.setLocation(25, 420);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+					currentTurnFrame.setLocation(15, 220);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+					currentTurnFrame.setLocation(10, 75);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 4) {
+					currentTurnFrame.setLocation(795, 75);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 5) {
+					currentTurnFrame.setLocation(1580, 75);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 6) {
+					currentTurnFrame.setLocation(1580, 220);
+				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 7) {
+					currentTurnFrame.setLocation(1580, 420);
+				}				
+				currentPlayers.add(currentTurnFrame);
+				panel.add(currentTurnFrame);
+				
 				JLabel username = new JLabel();
 				username.setText(Data.players.get((Data.userID + i) % Data.players.size()).name);
 				username.setSize(100, 15);
@@ -1319,7 +1453,7 @@ public class Window1700 extends Window implements Runnable{
 				}
 				panel.add(username);
 				currentPlayers.add(username);
-				
+
 				if (Data.players.get((Data.userID + i) % Data.players.size()).foot) {
 					JLabel footIndicator = new JLabel();
 					try {
@@ -1374,6 +1508,28 @@ public class Window1700 extends Window implements Runnable{
 		}
 	}
 
+	public void DrawScoreBoard() {
+		for (JLabel j : currentScores) {
+			ScoreBoard.remove(j);
+		}
+		currentScores.clear();
+		JLabel title = new JLabel();
+		title.setSize(200, 30);
+		title.setLocation(0, 0);
+		title.setText("Scores");
+		currentScores.add(title);
+		ScoreBoard.add(title);
+		for (int i = 0; i < Data.scores.size(); i++) {
+			JLabel score = new JLabel();
+			score.setText(Data.teamNames.get(i) + ":" + Data.scores.get(i));
+			score.setSize(100, 20);
+			score.setLocation(0, 20 + (i * 20));
+			currentScores.add(score);
+			ScoreBoard.add(score);
+		}
+
+	}
+
 	/**
 	 * Adds the number of a card to a given JLabel, at the x, y location
 	 * 
@@ -1397,7 +1553,8 @@ public class Window1700 extends Window implements Runnable{
 				RorB = "Red";
 			}
 			try {
-				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/" + RorB + locationInFirstArray + ".png"));
+				image = ImageIO
+						.read(new File("res/images/" + Data.Resolution + "/" + RorB + locationInFirstArray + ".png"));
 				num = new JLabel(new ImageIcon(image));
 				num.setSize(60, 60);
 				num.setLocation(x, y);
@@ -1559,35 +1716,32 @@ public class Window1700 extends Window implements Runnable{
 		panel.repaint();
 	}
 
-
 	public static void resize(Component c, float scaleX, float scaleY) {
 		Point s = c.getLocation();
 		int x = c.getWidth();
 		int y = c.getHeight();
-		c.setLocation((int)scaleX*s.x, (int)scaleY*s.y);
-		c.setSize((int)scaleX*x, (int)scaleY*y);
-		if(c instanceof JLabel) {
-			if(((JLabel)c).getIcon() != null) {
-				Image img = ((ImageIcon) ((JLabel)c).getIcon()).getImage();
+		c.setLocation((int) scaleX * s.x, (int) scaleY * s.y);
+		c.setSize((int) scaleX * x, (int) scaleY * y);
+		if (c instanceof JLabel) {
+			if (((JLabel) c).getIcon() != null) {
+				Image img = ((ImageIcon) ((JLabel) c).getIcon()).getImage();
 				Image newImg = img.getScaledInstance(c.getWidth(), c.getHeight(), java.awt.Image.SCALE_SMOOTH);
-				((JLabel)c).setIcon(new ImageIcon(newImg));
+				((JLabel) c).setIcon(new ImageIcon(newImg));
 			}
 		}
-		if(c instanceof Container) {
-			Component[] b = ((Container)c).getComponents();
-			for(Component t : b) {
+		if (c instanceof Container) {
+			Component[] b = ((Container) c).getComponents();
+			for (Component t : b) {
 				resize(t, scaleX, scaleY);
 			}
 		}
 
-		
 	}
-	
+
 	@Override
 	public void run() {
 		CreateWindow();
 	}
-	
 
 }
 

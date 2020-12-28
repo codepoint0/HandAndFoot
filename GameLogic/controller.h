@@ -47,9 +47,14 @@ class Controller{
         void CountDown(int threadid);
         void ListenForNewClients();
         void SendPlayerInfo(int PlayerId, std::string message);
-        void SendAllInfo(std::string message);
+        vector<int> Pairing(vector<int> selected);
         std::string StringHand(int playerID, vector<Player*> turn);
         std::string StringGroup(int PlayerID, vector<Player*> turn);
+        vector<int> TurnOrder(vector<int> correctPairs);
+        void PreSendPlayerInfo(int playerID, std::string message);
+        std::string PreRead(int i);
+        vector<vector<int>> enumeratedPairings(int k);
+        int score(vector<int> pairs, vector<int> selected);
 };
 
 #endif

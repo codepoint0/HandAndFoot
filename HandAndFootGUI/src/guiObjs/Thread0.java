@@ -48,12 +48,12 @@ public class Thread0 implements Runnable {
 			OutBuffer = message.getBytes();
 			System.out.println(message);
 			out.write(OutBuffer);
-			OutBuffer = new byte[4096];
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		System.gc();
 	}
 
 	@Override
@@ -103,8 +103,14 @@ public class Thread0 implements Runnable {
 					SendMessage("~");
 					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("HC:")) {
-					Data.players.get(Integer.parseInt(message.substring(3, 4))).cards = Integer
-							.parseInt(message.substring(5, message.length()).trim());
+					try {
+						Data.players.get(Integer.parseInt(message.substring(3, 4))).cards = Integer
+								.parseInt(message.substring(5, message.length()).trim());
+					}
+					catch(Exception e) {
+						System.out.println("ERRORROROAJSDFASDF");
+					}
+					
 					SendMessage("~");
 					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("HF:")) {
@@ -214,11 +220,15 @@ public class Thread0 implements Runnable {
 						for (int i = 0; i < Data.numOfPlayers; i++) {
 							Data.players.add(new Player());
 						}
+						for(int i = 0; i < Data.numOfPlayers/2; i++) {
+							Data.scores.add(0);
+							Data.teamNames.add("");
+						}
 					} catch (Exception e) {
 						System.out.println(e.toString());
 					}
 
-					Data.l.start();
+					Data.ts.start();
 					SendMessage(Data.username);
 					Data.setUpdate();
 				}
@@ -230,10 +240,44 @@ public class Thread0 implements Runnable {
 					} catch (Exception e) {
 						System.out.println(e.toString());
 					}
-					Data.players.get(user).name = message.substring(5, message.length() - 1);
+					Data.players.get(user).name = message.substring(5, message.length()-1);
 					SendMessage("~");
 					Data.setUpdate();
 				}
+				else if (message.substring(0, 3).equals("GU:")) {
+					System.out.println("GU!");
+					if(message.substring(0,4).equals("GU:0")) {
+						Data.Original = true;
+					}
+					System.out.println(message.substring(3));
+					SendMessage(Data.username);
+				}
+				else if (message.substring(0, 3).equals("US:")) {
+					System.out.println(message.substring(3));
+
+					Data.usernames.add(message.substring(5, message.length() - 1));
+					SendMessage("~");
+				}
+				else if (message.substring(0, 3).equals("LB:")) {
+					Data.l.start();
+					SendMessage("~");
+				}
+				
+				else if (message.substring(0, 3).equals("SC:")) {
+					SendMessage("" + Data.selectedTeam);
+				}
+				else if(message.substring(0, 3).equals("SB:")) {
+					Data.scores.set(Integer.parseInt(message.substring(3,4).trim()), Integer.parseInt(message.substring(8, message.length()).trim()));
+					Data.teamNames.set(Integer.parseInt(message.substring(3,4).trim()), message.substring(5, 7).trim());
+					SendMessage("~");
+					Data.setUpdate();
+				}
+				else if(message.substring(0,3).equals("NT:")) {
+					Data.CurrentTurn = Integer.parseInt(message.substring(3, 4).trim());
+					SendMessage("~");
+					Data.setUpdate();
+				}
+				
 			}
 
 			catch (Exception e) {

@@ -5,6 +5,7 @@ import java.net.Socket;
 
 import guiObjs.Data;
 import guiObjs.Lobby;
+import guiObjs.TeamSelect;
 import guiObjs.Thread0;
 import guiObjs.Welcome;
 import guiObjs.Window1700;
@@ -15,11 +16,13 @@ public class Run {
 		Data.InitData();
 		Welcome w = new Welcome();
 		Lobby l = new Lobby();
+		TeamSelect ts = new TeamSelect();
 		Window1700 wd = new Window1700();
 		Data.w = wd;
 		
 		Data.s = w;
 		Data.l = l;
+		Data.ts = ts;
 		
 		int i = 0;
 		

@@ -43,9 +43,17 @@ public class Data {
 	public static boolean connected;
 	public static int numOfPlayers;
 	public static int Resolution;
-
+	public static int selectedTeam;
+	public static ArrayList<String> usernames;
+	public static TeamSelect ts;
+	public static boolean Original = false;
+	public static ArrayList<Integer> scores;
+	public static ArrayList<String> teamNames;
+	public static ArrayList<JLabel> cardNums;
+	public static int CurrentTurn;
 	
 	public static void InitData() {
+		CurrentTurn = 0;
 		client = new Socket();
 		hand = new ArrayList<Card>();
 		pile = new ArrayList<Card>();
@@ -58,6 +66,10 @@ public class Data {
 		dirty = new boolean[11];
 		connected = false;
 		numOfPlayers = -1;
+		selectedTeam = -1;
+		usernames = new ArrayList<String>();
+		scores = new ArrayList<Integer>();
+		teamNames = new ArrayList<String>();
 		
 		for(int i = 0; i < 11; i++) {
 			ArrayList<Card> s = new ArrayList<Card>();

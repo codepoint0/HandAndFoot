@@ -46,16 +46,9 @@ public class Lobby implements Runnable{
 	}
 	
 	public void start() {
-		Window w = null;
-		if(Data.Resolution == 1700) {
-			w = new Window1700();
-		}
-		else if(Data.Resolution == 1020) {
-			w = new Window1020();
-		}
-		
-		Data.w = w;
-		Thread t1 = new Thread(w);
+		TeamSelect ts = new TeamSelect();
+		Data.ts = ts;
+		Thread t1 = new Thread(ts);
 		t1.run();
 	}
 

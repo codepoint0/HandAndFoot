@@ -102,12 +102,10 @@ bool Player::play(vector<Card>* c){
             // If therer are not 3 cards in the pile OR there are more wilds
             // than the number card then not valid
             if(temp.size() < 3 || numWilds > (temp.size()/2)){
-                if(!team->meld && team->groups[i].cards.empty()){
-                     throw NotEnoughCardsException();
-                }
+                throw NotEnoughCardsException();
             }
 
-            if(!(team->groups[i].dirty) && numWilds == 0 && temp.size() > 6){
+            if(numWilds == 0 && temp.size() > 6){
                 clean = true;
             }
         }
@@ -212,7 +210,7 @@ int Team::score(){
 
 BoardState::BoardState(int ts){
     teams = ts;
-    b = new Board(ts);
+    b = new Board(ts*3);
     for(int i = 0; i < ts; i++){
         Team* team = new Team(b);
         t.push_back(team);

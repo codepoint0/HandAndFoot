@@ -292,7 +292,7 @@ public class Welcome {
 		
 		
 		resolution = new JTextField();
-		resolution.setText("1700");
+		resolution.setText("1020");
 		resolution.setSize(130, 30);
 		resolution.setLocation(570, 370);
 		resolution.addMouseListener(new MouseListener() {

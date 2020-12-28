@@ -26,6 +26,7 @@ vector<Client> clients;
 int players;
 bool wait;
 vector<std::string> usernames;
+vector<int> controlled;
 
 /*
     Splits a string into a vector upon a given token
@@ -84,6 +85,14 @@ void Controller::play(){
         turn[i+b->teams] = b->t[i]->p2;
     }
     for(int i = 0; i < turn.size(); i++){
+
+        std::stringstream scores;
+        for(int j = 0; j < b->t.size(); j++){
+            SendPlayerInfo(i, "SB:" + to_string(j) + " " + usernames[j][0] + "" + usernames[j+b->teams][0] + " " + "0");
+            Read(i);
+        }  
+    }
+    for(int i = 0; i < turn.size(); i++){
         if(i == 0){
             SendPlayerInfo(i, "PS:1");
             Read(i);
@@ -127,13 +136,15 @@ void Controller::play(){
                 ss.str("");
             }
             if(turn[j]->inFoot){
+                std::cout << "FOOT:" << turn[j]->hand->cards.size() << std::endl;
                 ss << "HC:" << j << " " << turn[j]->foot->cards.size();
                 SendPlayerInfo(i, ss.str());
                 Read(i);
                ss.str("");
             }
             else{
-                ss << "HC:" << j << " " << turn[j]->foot->cards.size();
+                std::cout << "CARD:" << turn[j]->hand->cards.size() << std::endl;
+                ss << "HC:" << j << " " << turn[j]->hand->cards.size();
                 SendPlayerInfo(i, ss.str());
                 Read(i);
                 ss.str("");
@@ -178,6 +189,7 @@ void Controller::play(){
         std::string hand = StringHand(currentTurn, turn);
         SendPlayerInfo(currentTurn, hand);
         Read(currentTurn);
+        SendPlayerInfo(currentTurn, "~");
         std::string PorD = Read(currentTurn);
         std::cout << PorD << std::endl;
         if(PorD[0] == 'D'){
@@ -214,12 +226,9 @@ void Controller::play(){
         Read(currentTurn);
 
         input = "";
-
         input = Read(currentTurn);
         std::cout << input << std::endl;
         while(input[0] != 'M'){
-            // Flush cin
-
             // In order to lay cards down the input will come
             // in as:
             // A|4|5|6|7|8|9|10|J|Q|K|
@@ -227,43 +236,49 @@ void Controller::play(){
             // 1 1 0,1 0 1||5 0 1|...
             // Following: value suit deckID
             vector<Card> c[11];
-            vector<std::string> cardSet;
+            try{
 
-            // Split on the pipes
-            cardSet = split(input, "|");
-            
-            // Go through each of the piped groups
-            for(int i = 0; i < 11; i++){
+                vector<std::string> cardSet;
 
-                // Split by cards
-                vector<std::string> cardStrings;
-                cardStrings = split(cardSet[i], ",");
+                // Split on the pipes
+                cardSet = split(input, "|");
+                
+                // Go through each of the piped groups
+                for(int i = 0; i < 11; i++){
 
-                int value,suit,deckID;
-                vector<Card> cards;
-                if(!(cardSet[i].compare("") == 0)){
-                    for(int j = 0; j < cardStrings.size(); j++){
-                        vector<std::string> s;
-                        s = split(cardStrings[j], " ");
+                    // Split by cards
+                    vector<std::string> cardStrings;
+                    cardStrings = split(cardSet[i], ",");
 
-                        // Extract the different values
-                        value = std::stoi(s[0]);
-                        suit = std::stoi(s[1]);
-                        deckID = std::stoi(s[2]);
-                        
-                        // Create cards based on the values
-                        if(value > 51){
-                            Card test(true,value,suit,50,deckID);
-                            cards.push_back(test);
+                    int value,suit,deckID;
+                    vector<Card> cards;
+                    if(!(cardSet[i].compare("") == 0)){
+                        for(int j = 0; j < cardStrings.size(); j++){
+                            vector<std::string> s;
+                            s = split(cardStrings[j], " ");
+
+                            // Extract the different values
+                            value = std::stoi(s[0]);
+                            suit = std::stoi(s[1]);
+                            deckID = std::stoi(s[2]);
+                            
+                            // Create cards based on the values
+                            if(value > 51){
+                                Card test(true,value,suit,50,deckID);
+                                cards.push_back(test);
+                            }
+                            else {
+                                Card test((value == 2),value,suit,vals[value-1],deckID);
+                                cards.push_back(test);
+                            }
+
                         }
-                        else {
-                            Card test((value == 2),value,suit,vals[value-1],deckID);
-                            cards.push_back(test);
-                        }
-
                     }
+                    c[i] = cards;
                 }
-                c[i] = cards;
+            }
+            catch(exception e){
+
             }
             try{
                 turn[currentTurn]->play(c);
@@ -323,6 +338,14 @@ void Controller::play(){
         if(turn[currentTurn]->inFoot && turn[currentTurn]->foot->cards.size() == 0){
             
             // Reset the board
+            
+            for(int i = 0; i < turn.size(); i++){
+                std::stringstream scores;
+                for(int j = 0; j < b->t.size(); j++){
+                    SendPlayerInfo(i, "SB:" + to_string(j) + " " + usernames[j][0] + "" + usernames[j+b->teams][0] + " " + to_string(turn[j]->team->score()));
+                    Read(i);
+                }  
+            }
             b->reset();
             
             // Add up all the scores and determine if someone has won
@@ -361,12 +384,18 @@ void Controller::play(){
                     ss.str("");
                 }
                 else{
-                    ss << "HC:" << j << " " << turn[j]->foot->cards.size();
+                    ss << "HC:" << j << " " << turn[j]->hand->cards.size();
                     SendPlayerInfo(i, ss.str());
                     Read(i);
                     ss.str("");
                 }
             }
+            // Display the players hand
+            std::string hand = StringHand(i, turn);
+            SendPlayerInfo(i, hand);
+            Read(i);
+            SendPlayerInfo(i, "NT:" + to_string((currentTurn+1)%players));
+            Read(i);
             Card c = b->b->pilePeek();
             std::stringstream s;
             s << "TC:" << c.value << " " << c.suit << " " << c.deckID;
@@ -505,33 +534,166 @@ void Controller::ListenForNewClients(){
 
         if(ThreadID == players){
             std::cout << clients.size() << std::endl;
+            std::string input;
+            vector<std::string> joinOrder;
+            for(int i = 0; i < players; i++){
+                PreSendPlayerInfo(i, "GU:" + to_string(i) + " " + to_string(players));
+                input = PreRead(i);
+                std::cout << input << std::endl;
+                joinOrder.push_back(input);
+                input = "";
+            }
+            for(int i = 0; i < players; i++){
+                for(int j = 0; j < players; j++){
+                    PreSendPlayerInfo(i, "US:" + to_string(j) + " " + joinOrder[j]);
+                    PreRead(i);
+                }
+                PreSendPlayerInfo(i, "LB:");
+                PreRead(i);
+            }
+
+            PreRead(0);
+            vector<int> selected;
+            vector<int> correctPairs;
+            for(int i = 0; i < players; i++){
+                std::string input;
+                PreSendPlayerInfo(i, "SC:");
+                input = PreRead(i);
+                selected.push_back(std::stoi(input));
+            }
+            std::cout << "1" << std::endl;
+            correctPairs = Pairing(selected);
+            std::cout << "2!" << std::endl;
+            controlled = TurnOrder(correctPairs);
+            std::cout << "3" << std::endl;
+
             play();
         }
-        
-        
-        
-        
     }
 }
 
+vector<int> Controller::TurnOrder(vector<int> correctPairs){
+    vector<bool> assigned;
+    vector<int> order;
+    for(int i=0;i<correctPairs.size();i++) {
+        assigned.push_back(false);
+        order.push_back(-1);
+    }
+    int index=0;
+    for(int i=0;i<correctPairs.size()/2;i++) {
+        while(assigned[index]) {
+            index++;
+        }
+        order[i] = index;
+        order[i + correctPairs.size()/2] = correctPairs[index];
+        assigned[index] = true;
+        assigned[correctPairs[index]] = true;
+    }
+    return order;
+}
 
 
-void Controller::SendPlayerInfo(int playerID, std::string message){
+vector<vector<int>> Controller::enumeratedPairings(int k)
+{
+    vector<vector<int>> toReturn;
+    if (k == 0)
+    {
+        return toReturn;
+    }
+    if (k == 2)
+    {
+        toReturn = {{1, 0}};
+    }
+    vector<vector<int>> recursive = enumeratedPairings(k - 2);
+    for (int i = 1; i < k; i++)
+    {
+        vector<int> attempts;
+        for (int j = 1; j < k; j++)
+        {
+            if (j != i)
+            {
+                attempts.push_back(j);
+            }
+        }
+        for (vector<int> v : recursive)
+        {
+            vector<int> proto;
+            for (int j = 0; j < k; j++)
+            {
+                proto.push_back(-1);
+            }
+            proto[0] = i;
+            proto[i] = 0;
+            for (int j = 0; j < k - 2; j++)
+            {
+                proto[attempts[j]] = attempts[v[j]];
+                proto[attempts[v[j]]] = attempts[j];
+            }
+            toReturn.push_back(proto);
+        }
+    }
+    return toReturn;
+}
+
+int Controller::score(vector<int> pairs, vector<int> selected)
+{
+    int scored = 0;
+    for (int i = 0; i < pairs.size(); i++)
+    {
+        if (pairs[i] == selected[i])
+        {
+            scored++;
+        }
+    }
+    return scored;
+}
+
+vector<int> Controller::Pairing(vector<int> selected)
+{
+    vector<vector<int>> enumeratedPairing = enumeratedPairings(selected.size());
+    int maxScore = -1;
+    vector<int> maxValue;
+    for (vector<int> v : enumeratedPairing)
+    {
+        if (score(v, selected) > maxScore)
+        {
+            maxScore = score(v, selected);
+            maxValue = v;
+        }
+    }
+    for(int i = 0; i < maxValue.size(); i++){
+        std::cout << maxValue[i] << std::endl;
+    }
+    return maxValue;
+}
+
+void Controller::PreSendPlayerInfo(int playerID, std::string message){
     std::cout << message << std::endl;
     send(clients[playerID].socket , message.c_str() , strlen(message.c_str()) , 0 );
     buffer[4096] = {0};
 }
 
-void Controller::SendAllInfo(std::string message){
-    for(int i = 0; i < clients.size(); i++){
-        send(clients[i].socket , message.c_str() , strlen(message.c_str()) , 0 ); 
-    }
+std::string Controller::PreRead(int i){
+    std::fill_n(buffer, 4096, 0);
+    std::string valread;
+    valread = read(clients[i].socket, buffer, sizeof(buffer)); 
+    std::string input = buffer;
+    std::cout << input << std::endl;
+    std::fill_n(buffer, 4096, 0);
+    return input;
+}
+
+
+void Controller::SendPlayerInfo(int playerID, std::string message){
+    std::cout << message << std::endl;
+    send(clients[controlled[playerID]].socket , message.c_str() , strlen(message.c_str()) , 0 );
+    buffer[4096] = {0};
 }
 
 std::string Controller::Read(int i){
     std::fill_n(buffer, 4096, 0);
     std::string valread;
-    valread = read(clients[i].socket, buffer, sizeof(buffer)); 
+    valread = read(clients[controlled[i]].socket, buffer, sizeof(buffer)); 
     std::string input = buffer;
     std::cout << input << std::endl;
     std::fill_n(buffer, 4096, 0);
