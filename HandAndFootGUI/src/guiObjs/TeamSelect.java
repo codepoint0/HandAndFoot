@@ -58,7 +58,7 @@ public class TeamSelect implements Runnable{
 
 			JButton start = new JButton();
 			start.setName("start");
-			start.setText("Start GAme");
+			start.setText("Start Game");
 			start.setSize(500, 30);
 			start.setLocation(0, 0);
 			if(Data.Original) {
@@ -90,7 +90,7 @@ public class TeamSelect implements Runnable{
 
 		
 		// frame Code
-		frame = new JFrame("My First GUI");
+		frame = new JFrame("Team selection");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(500, 500);
@@ -118,7 +118,7 @@ public class TeamSelect implements Runnable{
 		else if(Data.Resolution == 1020) {
 			w = new Window1020();
 		}
-		
+		frame.setVisible(false);
 		Data.w = w;
 		Thread t1 = new Thread(w);
 		t1.run();

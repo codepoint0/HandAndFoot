@@ -34,6 +34,7 @@ public class Window1700 extends Window implements Runnable {
 	float FrameSizeY;
 	JLabel cardPanel;
 	JLabel groupPanel;
+	JLabel justDrew;
 	JLabel discardBorder;
 	JLabel discardPile;
 	JLabel foot;
@@ -44,6 +45,7 @@ public class Window1700 extends Window implements Runnable {
 	JLabel lightRed;
 	JLabel darkRed;
 	JLabel ScoreBoard;
+	JLabel discardConfirm;
 
 	// BUTTONS
 	JButton play;
@@ -71,6 +73,7 @@ public class Window1700 extends Window implements Runnable {
 	ArrayList<JLabel> currentScores;
 	ArrayList<JLabel> cleanBooks;
 	ArrayList<JLabel> dirtyBooks;
+	ArrayList<JLabel> justDrewLabels;
 
 	@Override
 	public void CreateWindow() {
@@ -90,6 +93,7 @@ public class Window1700 extends Window implements Runnable {
 		currentScores = new ArrayList<JLabel>();
 		cleanBooks = new ArrayList<JLabel>();
 		dirtyBooks = new ArrayList<JLabel>();
+		justDrewLabels = new ArrayList<JLabel>();
 
 		CreatePanelButtons();
 
@@ -189,6 +193,12 @@ public class Window1700 extends Window implements Runnable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		
+		justDrew = new JLabel();
+		justDrew.setSize(85, 140);
+		justDrew.setLocation(1430, 520);
+		justDrew.setVisible(false);
+		panel.add(justDrew);
 
 		try {
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/Discard.png"));
@@ -293,7 +303,7 @@ public class Window1700 extends Window implements Runnable {
 			try {
 				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/CleanBook.png"));
 				JLabel clean = new JLabel(new ImageIcon(image));
-				clean.setSize(95, 130);
+				clean.setSize(90, 125);
 				clean.setLocation(5 + (105 * i), 20);
 				clean.setVisible(false);
 				cleanBooks.add(clean);
@@ -305,7 +315,7 @@ public class Window1700 extends Window implements Runnable {
 			try {
 				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/DirtyBook.png"));
 				JLabel dirty = new JLabel(new ImageIcon(image));
-				dirty.setSize(95, 130);
+				dirty.setSize(90, 125);
 				dirty.setLocation(5 + (105 * i), 20);
 				dirty.setVisible(false);
 				dirtyBooks.add(dirty);
@@ -314,6 +324,16 @@ public class Window1700 extends Window implements Runnable {
 				ex.printStackTrace();
 			}
 			
+		}
+		
+		try {
+			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/DiscardConfirm.png"));
+			discardConfirm = new JLabel(new ImageIcon(image));
+			discardConfirm.setSize(110, 40);
+			discardConfirm.setLocation(1115, 648);
+			panel.add(discardConfirm);
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 
 		for (int i = 0; i < 13; i++) {
@@ -396,6 +416,7 @@ public class Window1700 extends Window implements Runnable {
 					draw.setEnabled(false);
 					draw.setVisible(false);
 					Data.th.SendMessage("D");
+					justDrew.setVisible(true);
 				}
 			}
 
@@ -993,6 +1014,9 @@ public class Window1700 extends Window implements Runnable {
 			play.setVisible(true);
 			discard.setEnabled(false);
 			discard.setVisible(true);
+			discardConfirm.setVisible(false);
+			justDrew.setVisible(false);
+			Data.drewCard = false;
 		}
 		if (Data.phase == 1) {
 			draw.setEnabled(true);
@@ -1030,6 +1054,16 @@ public class Window1700 extends Window implements Runnable {
 			discard.setEnabled(true);
 			discard.setVisible(true);
 		}
+		if(Data.endGame) {
+			panel.setVisible(false);
+			JPanel finalPanel = new JPanel();
+			finalPanel.setLayout(null);
+			finalPanel.setSize(1700, 950);
+			finalPanel.setBackground(new Color(153, 221, 255));
+			ScoreBoard.setLocation(850, 475);
+			finalPanel.add(ScoreBoard);
+			frame.add(finalPanel);
+		}
 		panel.repaint();
 	}
 
@@ -1046,6 +1080,32 @@ public class Window1700 extends Window implements Runnable {
 		currentCards.clear();
 
 		Data.hand.sort(c);
+		
+		if(Data.drewCard) {
+			justDrew.setVisible(true);
+			for(JLabel j : justDrewLabels) {
+				justDrew.remove(j);
+			}
+			justDrewLabels.clear();
+			JLabel justDrewTitle = new JLabel();
+			justDrewTitle.setText("Drew: ");
+			justDrewTitle.setSize(85, 10);
+			justDrewTitle.setLocation(0, 0);
+			justDrew.add(justDrewTitle);
+			if(Data.drew.value != 52 && Data.drew.value != 53) {
+				CreateNumberForCard(0, 10, Data.drew.suit, Data.drew.value-1, justDrewLabels, justDrew, false);
+				CreateSuitForCard(0, 70, Data.drew.suit, justDrewLabels, justDrew);
+			}
+			else {
+				if (Data.drew.value == 52) {
+					CreateNumberForCard(0, 75, 52, -1, justDrewLabels, justDrew, true);
+				} else {
+					CreateNumberForCard(0, 75, 53, -1, justDrewLabels, justDrew, true);
+				}
+			}
+			
+			CreateCardStock(0, 10, justDrewLabels, justDrew);
+		}
 
 		if (Data.players.get(Data.userID).foot) {
 			foot.setVisible(true);
@@ -1688,6 +1748,7 @@ public class Window1700 extends Window implements Runnable {
 			Data.QueuedIndex = -1;
 			Data.IsQueued = false;
 			Data.discardQueued = true;
+			discardConfirm.setVisible(true);
 			Data.pileNumber++;
 			DrawHand();
 			DrawPile();
@@ -1696,6 +1757,7 @@ public class Window1700 extends Window implements Runnable {
 			Data.hand.add(Data.pile.get(Data.pile.size() - 1));
 			Data.pile.remove(Data.pile.size() - 1);
 			Data.QueuedIndex = -1;
+			discardConfirm.setVisible(false);
 			Data.IsQueued = false;
 			Data.discardQueued = false;
 			Data.pileNumber--;

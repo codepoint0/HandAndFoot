@@ -49,6 +49,7 @@ public class Lobby implements Runnable{
 		TeamSelect ts = new TeamSelect();
 		Data.ts = ts;
 		Thread t1 = new Thread(ts);
+		frame.setVisible(false);
 		t1.run();
 	}
 

@@ -80,7 +80,6 @@ public class Thread0 implements Runnable {
 					}
 
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("TC:")) {
 					Data.pile.clear();
 					System.out.println("CLEARED");
@@ -97,11 +96,9 @@ public class Thread0 implements Runnable {
 					}
 					System.out.println("PARSED");
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("PN:")) {
 					Data.pileNumber = Integer.parseInt(message.substring(3, message.length()).trim());
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("HC:")) {
 					try {
 						Data.players.get(Integer.parseInt(message.substring(3, 4))).cards = Integer
@@ -112,7 +109,6 @@ public class Thread0 implements Runnable {
 					}
 					
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("HF:")) {
 					System.out.println(message.charAt(5) + " " + message.charAt(3));
 					if (message.charAt(5) == '1') {
@@ -131,7 +127,6 @@ public class Thread0 implements Runnable {
 					}
 
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("EE:")) {
 					for (int i = 0; i < Data.plannedGroups.size(); i++) {
 						for (int j = 0; j < Data.plannedGroups.get(i).size(); j++) {
@@ -140,7 +135,6 @@ public class Thread0 implements Runnable {
 						Data.plannedGroups.get(i).clear();
 					}
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("PH:")) {
 					String[] cards = message.substring(3, message.length()).split(",");
 					Data.hand.clear();
@@ -154,7 +148,6 @@ public class Thread0 implements Runnable {
 
 					}
 					SendMessage("~");
-					Data.setUpdate();
 				} else if (message.substring(0, 3).equals("PG:")) {
 					int playerID = Integer.parseInt(message.substring(3, 4).trim());
 					if (Data.userID == playerID) {
@@ -182,7 +175,6 @@ public class Thread0 implements Runnable {
 							}
 						}
 						SendMessage("~");
-						Data.setUpdate();
 					} else {
 						for (int i = 0; i < 11; i++) {
 							Data.players.get(playerID).groups.get(i).clear();
@@ -203,7 +195,6 @@ public class Thread0 implements Runnable {
 							}
 						}
 						SendMessage("~");
-						Data.setUpdate();
 					}
 				} else if (message.substring(0, 3).equals("SG:")) {
 					System.out.println(message.substring(3));
@@ -230,7 +221,6 @@ public class Thread0 implements Runnable {
 
 					Data.ts.start();
 					SendMessage(Data.username);
-					Data.setUpdate();
 				}
 				else if (message.substring(0, 3).equals("UN:")) {
 					System.out.println(message.substring(3));
@@ -242,7 +232,6 @@ public class Thread0 implements Runnable {
 					}
 					Data.players.get(user).name = message.substring(5, message.length()-1);
 					SendMessage("~");
-					Data.setUpdate();
 				}
 				else if (message.substring(0, 3).equals("GU:")) {
 					System.out.println("GU!");
@@ -269,13 +258,41 @@ public class Thread0 implements Runnable {
 				else if(message.substring(0, 3).equals("SB:")) {
 					Data.scores.set(Integer.parseInt(message.substring(3,4).trim()), Integer.parseInt(message.substring(8, message.length()).trim()));
 					Data.teamNames.set(Integer.parseInt(message.substring(3,4).trim()), message.substring(5, 7).trim());
-					SendMessage("~");
 					Data.setUpdate();
+					SendMessage("~");
 				}
 				else if(message.substring(0,3).equals("NT:")) {
 					Data.CurrentTurn = Integer.parseInt(message.substring(3, 4).trim());
 					SendMessage("~");
+				}
+				else if(message.substring(0, 3).equals("DW:")) {
+					int suit = 0;
+					int value = 0;
+					try {
+						suit = Integer.parseInt(message.substring(3,4).trim());
+						value = Integer.parseInt(message.substring(5, message.length()).trim());
+					}
+					catch(Exception e) {
+							suit = -1;
+							value = Integer.parseInt(message.substring(6, message.length()).trim());
+					}
+					
+					
+					Data.drew.suit = suit;
+					Data.drew.value = value;
+					Data.drewCard = true;
+					SendMessage("~");
+				}
+				else if(message.substring(0, 3).equals("RD:")) {
+					SendMessage("~");
 					Data.setUpdate();
+				}
+				else if(message.substring(0, 3).equals("EG:")) {
+					Data.scores.set(Integer.parseInt(message.substring(3,4).trim()), Integer.parseInt(message.substring(8, message.length()).trim()));
+					Data.teamNames.set(Integer.parseInt(message.substring(3,4).trim()), message.substring(5, 7).trim());
+					Data.endGame = true;
+					Data.setUpdate();
+					SendMessage("~");
 				}
 				
 			}

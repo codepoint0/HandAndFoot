@@ -102,7 +102,7 @@ class Hand{
         vector<Card> cards;
 
         Hand& operator=(const Hand& h);
-        void draw();
+        Card draw();
         void discard(Card c);
         void pickUp();
         void remove(vector<Card> c);

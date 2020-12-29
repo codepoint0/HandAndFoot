@@ -148,7 +148,7 @@ Hand& Hand::operator=(const Hand& h) {
     return *this;
 }
 
-void Hand::draw() {
+Card Hand::draw() {
     Card c = board->draw();
     try{
         cards.push_back(c);
@@ -156,6 +156,7 @@ void Hand::draw() {
     catch (exception e){
         throw e;
     }
+    return c;
 }
 
 void Hand::discard(Card c){

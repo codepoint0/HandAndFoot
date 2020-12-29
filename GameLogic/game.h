@@ -39,7 +39,7 @@ class Player{
         Player(Team* t, Board* b);
         ~Player();
 
-        void draw();
+        Card draw();
         void discard(Card c);
         void pickUp();
 

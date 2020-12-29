@@ -155,6 +155,8 @@ void Controller::play(){
             Read(i);
             ss.str("");
         }
+        SendPlayerInfo(i, "RD:");
+        Read(i);
     }
 
     int currentTurn = 0;
@@ -184,6 +186,8 @@ void Controller::play(){
             SendPlayerInfo(currentTurn, "PN:" + to_string(b->b->pile.size()));
             Read(currentTurn);
         }
+        SendPlayerInfo(currentTurn, "RD:");
+        Read(currentTurn);
 
         // Display the players hand
         std::string hand = StringHand(currentTurn, turn);
@@ -193,11 +197,15 @@ void Controller::play(){
         std::string PorD = Read(currentTurn);
         std::cout << PorD << std::endl;
         if(PorD[0] == 'D'){
-            turn[currentTurn]->draw();
+            Card c = turn[currentTurn]->draw();
+            SendPlayerInfo(currentTurn, "DW:" + to_string(c.suit) + " " + to_string(c.value));
+            Read(currentTurn);
         }
         else{
             turn[currentTurn]->pickUp();
         }
+        SendPlayerInfo(currentTurn, "RD:");
+        Read(currentTurn);
 
         for(int i = 0; i < players; i++){
             // Try to look at the top card on the pile (if not it is okay and not an error)
@@ -216,6 +224,8 @@ void Controller::play(){
                 SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
                 Read(i);
             }
+            SendPlayerInfo(i, "RD:");
+            Read(i);
         }
 
         SendPlayerInfo(currentTurn, "PS:2");
@@ -223,6 +233,9 @@ void Controller::play(){
         // Display the players hand
         hand = StringHand(currentTurn, turn);
         SendPlayerInfo(currentTurn, hand);
+        Read(currentTurn);
+
+        SendPlayerInfo(currentTurn, "RD:");
         Read(currentTurn);
 
         input = "";
@@ -288,6 +301,9 @@ void Controller::play(){
                 Read(currentTurn);
                 SendPlayerInfo(currentTurn, groups);
                 Read(currentTurn);
+                std::string groupsPartner = StringGroup((currentTurn+turn.size()/2)%turn.size(), turn);
+                SendPlayerInfo((currentTurn+turn.size()/2)%turn.size(), groupsPartner);
+                Read((currentTurn+turn.size()/2)%turn.size());
                 if(!turn[currentTurn]->team->meld){
                     turn[currentTurn]->team->meld = true;
                 }
@@ -299,8 +315,15 @@ void Controller::play(){
                 Read(currentTurn);
             }
 
+            
+
             SendPlayerInfo(currentTurn, "PS:2");
             Read(currentTurn);
+
+            SendPlayerInfo(currentTurn, "RD:");
+            Read(currentTurn);
+            SendPlayerInfo((currentTurn+turn.size()/2)%turn.size(), "RD:");
+            Read((currentTurn+turn.size()/2)%turn.size());
 
             input = Read(currentTurn);
         }
@@ -310,6 +333,9 @@ void Controller::play(){
         SendPlayerInfo(currentTurn, hand);
         Read(currentTurn);
         SendPlayerInfo(currentTurn, "PS:4");
+        Read(currentTurn);
+    
+        SendPlayerInfo(currentTurn, "RD:");
         Read(currentTurn);
 
         int value,suit,deckID;
@@ -334,6 +360,9 @@ void Controller::play(){
         SendPlayerInfo(currentTurn, hand);
         Read(currentTurn);
         
+        SendPlayerInfo(currentTurn, "RD:");
+        Read(currentTurn);
+
         // If the player lays down and discards their last card in their foot then they are done!
         if(turn[currentTurn]->inFoot && turn[currentTurn]->foot->cards.size() == 0){
             
@@ -344,15 +373,89 @@ void Controller::play(){
                 for(int j = 0; j < b->t.size(); j++){
                     SendPlayerInfo(i, "SB:" + to_string(j) + " " + usernames[j][0] + "" + usernames[j+b->teams][0] + " " + to_string(turn[j]->team->score()));
                     Read(i);
+                    SendPlayerInfo(i, "RD:");
+                    Read(i);
                 }  
             }
+            
             b->reset();
+            for(int i = 0; i < turn.size(); i++){
+                // Try to look at the top card on the pile (if not it is okay and not an error)
+                try{
+                    Card c = b->b->pilePeek();
+                    std::stringstream s;
+                    s << "TC:" << c.value << " " << c.suit << " " << c.deckID;
+                    SendPlayerInfo(i, s.str());
+                    Read(i);
+                    SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
+                    Read(i);
+                }
+                catch(exception e){
+                    SendPlayerInfo(i, "TC:0 0 0");
+                    Read(i);
+                    SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
+                    Read(i);
+                }
+
+                // Display the players hand
+                std::string hand = StringHand(i, turn);
+                SendPlayerInfo(i, hand);
+                Read(i);
+
+                stringstream ss;
+                for(int j = 0; j < turn.size(); j++){
+                    SendPlayerInfo(i, StringGroup(j, turn));
+                    Read(i);
+                    if(turn[j]->inFoot){
+                        ss << "HF:" << j << " " << "0";
+                        SendPlayerInfo(i, ss.str());
+                        Read(i);
+                        ss.str("");
+                    }
+                    else{
+                        ss << "HF:" << j << " " << "1";
+                        SendPlayerInfo(i, ss.str());
+                        Read(i);
+                        ss.str("");
+                    }
+                    if(turn[j]->inFoot){
+                        std::cout << "FOOT:" << turn[j]->hand->cards.size() << std::endl;
+                        ss << "HC:" << j << " " << turn[j]->foot->cards.size();
+                        SendPlayerInfo(i, ss.str());
+                        Read(i);
+                    ss.str("");
+                    }
+                    else{
+                        std::cout << "CARD:" << turn[j]->hand->cards.size() << std::endl;
+                        ss << "HC:" << j << " " << turn[j]->hand->cards.size();
+                        SendPlayerInfo(i, ss.str());
+                        Read(i);
+                        ss.str("");
+                    }
+                    ss.str("");
+                    ss << "UN:" << j << " " << usernames[j];
+                    SendPlayerInfo(i, ss.str());
+                    Read(i);
+                    ss.str("");
+                }
+                SendPlayerInfo(i, "RD:");
+                Read(i);
+            }
             
             // Add up all the scores and determine if someone has won
             for(int i = 0; i < b->teams; i++){
                 if(b->scores[i] >= 10000){
                     done = true;
                     winningScore = b->scores[i];
+                    // Reset the board
+            
+                    for(int i = 0; i < turn.size(); i++){
+                        std::stringstream scores;
+                        for(int j = 0; j < b->t.size(); j++){
+                            SendPlayerInfo(i, "EG:" + to_string(j) + " " + usernames[j][0] + "" + usernames[j+b->teams][0] + " " + to_string(turn[j]->team->score()));
+                            Read(i);
+                        }  
+                    }
                 }
             }
         }
@@ -362,33 +465,33 @@ void Controller::play(){
 
         for(int i = 0; i < players; i++){
             stringstream ss;
-            for(int j = 0; j < players; j++){
-                SendPlayerInfo(i, StringGroup(j, turn));
+            SendPlayerInfo(i, StringGroup(currentTurn, turn));
+            Read(i);
+            SendPlayerInfo(i, StringGroup((currentTurn+turn.size()/2)%turn.size(), turn));
+            Read(i);
+            if(turn[currentTurn]->inFoot){
+                ss << "HF:" << currentTurn << " " << "0";
+                SendPlayerInfo(i, ss.str());
                 Read(i);
-                if(turn[j]->inFoot){
-                    ss << "HF:" << j << " " << "0";
-                    SendPlayerInfo(i, ss.str());
-                    Read(i);
-                    ss.str("");
-                }
-                else{
-                    ss << "HF:" << j << " " << "1";
-                    SendPlayerInfo(i, ss.str());
-                    Read(i);
-                    ss.str("");
-                }
-                if(turn[j]->inFoot){
-                    ss << "HC:" << j << " " << turn[j]->foot->cards.size();
-                    SendPlayerInfo(i, ss.str());
-                    Read(i);
-                    ss.str("");
-                }
-                else{
-                    ss << "HC:" << j << " " << turn[j]->hand->cards.size();
-                    SendPlayerInfo(i, ss.str());
-                    Read(i);
-                    ss.str("");
-                }
+                ss.str("");
+            }
+            else{
+                ss << "HF:" << currentTurn << " " << "1";
+                SendPlayerInfo(i, ss.str());
+                Read(i);
+                ss.str("");
+            }
+            if(turn[currentTurn]->inFoot){
+                ss << "HC:" << currentTurn << " " << turn[currentTurn]->foot->cards.size();
+                SendPlayerInfo(i, ss.str());
+                Read(i);
+                ss.str("");
+            }
+            else{
+                ss << "HC:" << currentTurn << " " << turn[currentTurn]->hand->cards.size();
+                SendPlayerInfo(i, ss.str());
+                Read(i);
+                ss.str("");
             }
             // Display the players hand
             std::string hand = StringHand(i, turn);
@@ -402,6 +505,8 @@ void Controller::play(){
             SendPlayerInfo(i, s.str());
             Read(i);
             SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
+            Read(i);
+            SendPlayerInfo(i, "RD:");
             Read(i);
            // HAND COUNT, FOOT, TOP CARD OF PILE, PILE NUM
         }

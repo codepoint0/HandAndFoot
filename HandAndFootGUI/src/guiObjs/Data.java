@@ -51,6 +51,9 @@ public class Data {
 	public static ArrayList<String> teamNames;
 	public static ArrayList<JLabel> cardNums;
 	public static int CurrentTurn;
+	public static Card drew;
+	public static boolean drewCard;
+	public static boolean endGame;
 	
 	public static void InitData() {
 		CurrentTurn = 0;
@@ -70,6 +73,7 @@ public class Data {
 		usernames = new ArrayList<String>();
 		scores = new ArrayList<Integer>();
 		teamNames = new ArrayList<String>();
+		drew = new Card(0, 0, 0);
 		
 		for(int i = 0; i < 11; i++) {
 			ArrayList<Card> s = new ArrayList<Card>();

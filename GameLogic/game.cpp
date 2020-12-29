@@ -26,13 +26,16 @@ Player::~Player(){
     delete foot;
 }
 
-void Player::draw(){
+Card Player::draw(){
     if(inFoot){
-        foot->draw();
+       Card c = foot->draw();
+       return c;
     }
     else{
-        hand->draw();
+        Card c = hand->draw();
+        return c;
     }
+    
 }
 
 void Player::discard(Card c){
