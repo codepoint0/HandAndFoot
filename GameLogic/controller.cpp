@@ -84,6 +84,40 @@ void Controller::play(){
         turn[i] = b->t[i]->p1;
         turn[i+b->teams] = b->t[i]->p2;
     }
+    for(int i = 0; i < turn.size()/2; i++){
+        SendPlayerInfo(i, "LC:" + to_string(b->t[i]->p1->hand->cards[0].suit) + " " + to_string(b->t[i]->p1->hand->cards[0].value));
+        Read(i);
+        SendPlayerInfo(i, "RC:" + to_string(b->t[i]->p1->foot->cards[0].suit) + " " + to_string(b->t[i]->p1->foot->cards[0].value));
+        Read(i);
+        SendPlayerInfo((i+turn.size()/2)%turn.size(), "LC:" + to_string(b->t[i]->p2->hand->cards[0].suit) + " " + to_string(b->t[i]->p2->hand->cards[0].value));
+        Read((i+turn.size()/2)%turn.size());
+        SendPlayerInfo((i+turn.size()/2)%turn.size(), "RC:" + to_string(b->t[i]->p2->foot->cards[0].suit) + " " + to_string(b->t[i]->p2->foot->cards[0].value));
+        Read((i+turn.size()/2)%turn.size());
+        SendPlayerInfo(i, "PS:6");
+        Read(i);
+        SendPlayerInfo((i+turn.size()/2)%turn.size(), "PS:6");
+        Read((i+turn.size()/2)%turn.size());
+        SendPlayerInfo(i, "RD:");
+        Read(i);
+        SendPlayerInfo((i+turn.size()/2)%turn.size(), "RD:");
+        Read((i+turn.size()/2)%turn.size());
+    }
+
+    sleep(20);
+
+    for(int i = 0; i < turn.size()/2; i++){
+        SendPlayerInfo(i, "SL:");
+        std::string choice = Read(i);
+        if(std::stoi(choice) == 2){
+            b->t[i]->p1->swap();
+        }
+        SendPlayerInfo((i+turn.size()/2)%turn.size(), "SL:");
+        choice = Read((i+turn.size()/2)%turn.size());
+        if(std::stoi(choice) == 2){
+            b->t[i]->p2->swap();
+        }
+    }
+
     for(int i = 0; i < turn.size(); i++){
 
         std::stringstream scores;
@@ -379,6 +413,40 @@ void Controller::play(){
             }
             
             b->reset();
+            for(int i = 0; i < turn.size()/2; i++){
+                SendPlayerInfo(i, "LC:" + to_string(b->t[i]->p1->hand->cards[0].suit) + " " + to_string(b->t[i]->p1->hand->cards[0].value));
+                Read(i);
+                SendPlayerInfo(i, "RC:" + to_string(b->t[i]->p1->foot->cards[0].suit) + " " + to_string(b->t[i]->p1->foot->cards[0].value));
+                Read(i);
+                SendPlayerInfo((i+turn.size()/2)%turn.size(), "LC:" + to_string(b->t[i]->p2->hand->cards[0].suit) + " " + to_string(b->t[i]->p2->hand->cards[0].value));
+                Read((i+turn.size()/2)%turn.size());
+                SendPlayerInfo((i+turn.size()/2)%turn.size(), "RC:" + to_string(b->t[i]->p2->foot->cards[0].suit) + " " + to_string(b->t[i]->p2->foot->cards[0].value));
+                Read((i+turn.size()/2)%turn.size());
+                SendPlayerInfo(i, "PS:6");
+                Read(i);
+                SendPlayerInfo((i+turn.size()/2)%turn.size(), "PS:6");
+                Read((i+turn.size()/2)%turn.size());
+                SendPlayerInfo(i, "RD:");
+                Read(i);
+                SendPlayerInfo((i+turn.size()/2)%turn.size(), "RD:");
+                Read((i+turn.size()/2)%turn.size());
+            }
+
+            sleep(20);
+
+            for(int i = 0; i < turn.size()/2; i++){
+                SendPlayerInfo(i, "SL:");
+                std::string choice = Read(i);
+                if(std::stoi(choice) == 2){
+                    b->t[i]->p1->swap();
+                }
+                SendPlayerInfo((i+turn.size()/2)%turn.size(), "SL:");
+                choice = Read((i+turn.size()/2)%turn.size());
+                if(std::stoi(choice) == 2){
+                    b->t[i]->p2->swap();
+                }
+            }
+
             for(int i = 0; i < turn.size(); i++){
                 // Try to look at the top card on the pile (if not it is okay and not an error)
                 try{
