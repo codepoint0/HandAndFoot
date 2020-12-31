@@ -233,7 +233,7 @@ void BoardState::reset(){
         scores[i] += t[i]->score();
     }
     delete b;
-    b = new Board(teams);
+    b = new Board(teams*3);
     for(int i = 0; i < teams; i++){
         t[i]->reset(b);
     }
