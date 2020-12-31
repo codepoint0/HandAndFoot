@@ -54,6 +54,9 @@ public class Data {
 	public static Card drew;
 	public static boolean drewCard;
 	public static boolean endGame;
+	public static int selected;
+	public static Card left;
+	public static Card right;
 	
 	public static void InitData() {
 		CurrentTurn = 0;
@@ -74,6 +77,9 @@ public class Data {
 		scores = new ArrayList<Integer>();
 		teamNames = new ArrayList<String>();
 		drew = new Card(0, 0, 0);
+		left = new Card(0, 0, 0);
+		right = new Card(0, 0, 0);
+		selected = 1;
 		
 		for(int i = 0; i < 11; i++) {
 			ArrayList<Card> s = new ArrayList<Card>();

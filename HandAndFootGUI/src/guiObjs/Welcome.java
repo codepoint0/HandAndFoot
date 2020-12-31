@@ -63,7 +63,7 @@ public class Welcome {
 			public void mouseClicked(MouseEvent me) {
 				create.setLocation(570, 190);
 				ip = new JTextField();
-				ip.setText("192.168.1.47");
+				ip.setText("35.155.50.243");
 				ip.setSize(130, 30);
 				ip.setLocation(570, 70);
 				ip.addMouseListener(new MouseListener() {
@@ -161,7 +161,7 @@ public class Welcome {
 
 			public void mouseClicked(MouseEvent me) {
 				ip = new JTextField();
-				ip.setText("192.168.1.47");
+				ip.setText("35.155.50.243");
 				ip.setSize(130, 30);
 				ip.setLocation(570, 110);
 				ip.addMouseListener(new MouseListener() {

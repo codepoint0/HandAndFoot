@@ -46,6 +46,8 @@ public class Window1020 extends Window implements Runnable {
 	JLabel ScoreBoard;
 	JLabel discardConfirm;
 	JLabel justDrew;
+	JLabel leftCard;
+	JLabel rightCard;
 
 	// BUTTONS
 	JButton play;
@@ -55,6 +57,8 @@ public class Window1020 extends Window implements Runnable {
 	JButton cancel;
 	JButton draw;
 	JButton back;
+	JButton selectButtonLeft;
+	JButton selectButtonRight;
 
 	JButton[] panelButtons = new JButton[12];
 	JButton[] groupButtons = new JButton[10];
@@ -74,6 +78,9 @@ public class Window1020 extends Window implements Runnable {
 	ArrayList<JLabel> cleanBooks;
 	ArrayList<JLabel> dirtyBooks;
 	ArrayList<JLabel> justDrewLabels;
+	ArrayList<JLabel> choiceLabelsLeft;
+	ArrayList<JLabel> choiceLabelsRight;
+	
 
 	@Override
 	public void CreateWindow() {
@@ -85,6 +92,15 @@ public class Window1020 extends Window implements Runnable {
 		panel.setLayout(null);
 		panel.setSize(1700, 950);
 		panel.setBackground(new Color(153, 221, 255));
+		
+		leftCard = new JLabel();
+		rightCard = new JLabel();
+		leftCard.setSize(51,72);
+		leftCard.setLocation(156, 147);
+		panel.add(leftCard);
+		rightCard.setSize(51,72);
+		rightCard.setLocation(813, 147);
+		panel.add(rightCard);
 
 		currentCards = new ArrayList<JLabel>();
 		currentGroups = new ArrayList<JLabel>();
@@ -94,6 +110,8 @@ public class Window1020 extends Window implements Runnable {
 		cleanBooks = new ArrayList<JLabel>();
 		dirtyBooks = new ArrayList<JLabel>();
 		justDrewLabels = new ArrayList<JLabel>();
+		choiceLabelsLeft = new ArrayList<JLabel>();
+		choiceLabelsRight = new ArrayList<JLabel>();
 		
 
 		CreatePanelButtons();
@@ -358,7 +376,7 @@ public class Window1020 extends Window implements Runnable {
 		ServerUpdate();
 
 		// frame Code
-		frame = new JFrame("My First GUI");
+		frame = new JFrame("Hand and Foot");
 		frame.setSize(1020, 570);
 
 		frame.setLayout(null);
@@ -374,6 +392,79 @@ public class Window1020 extends Window implements Runnable {
 	 * Creates all buttons for the given panel
 	 */
 	private void CreatePanelButtons() {
+		selectButtonLeft = new JButton();
+		selectButtonLeft.setSize(51,72);
+		selectButtonLeft.setLocation(156, 147);
+		selectButtonLeft.setVisible(false);
+		selectButtonLeft.setOpaque(false);
+		selectButtonLeft.setContentAreaFilled(false);
+		selectButtonLeft.setBorderPainted(false);
+		selectButtonLeft.addMouseListener(new MouseListener() {
+			public void mousePressed(MouseEvent me) {
+				if (me.getButton() == MouseEvent.BUTTON1) {
+					selectButtonLeft.setOpaque(true);
+					selectButtonLeft.setContentAreaFilled(true);
+					selectButtonLeft.setBorderPainted(true);
+					Data.selected = 1;
+				}
+			}
+
+			public void mouseReleased(MouseEvent me) {
+				if (me.getButton() == MouseEvent.BUTTON1) {
+					selectButtonLeft.setOpaque(false);
+					selectButtonLeft.setContentAreaFilled(false);
+					selectButtonLeft.setBorderPainted(false);
+				}
+			}
+
+			public void mouseEntered(MouseEvent me) {
+			}
+
+			public void mouseExited(MouseEvent me) {
+			}
+
+			public void mouseClicked(MouseEvent me) {
+
+			}
+		});
+		panel.add(selectButtonLeft);
+		
+		selectButtonRight = new JButton();
+		selectButtonRight.setSize(51,72);
+		selectButtonRight.setLocation(813, 147);
+		selectButtonRight.setVisible(false);
+		selectButtonRight.setOpaque(false);
+		selectButtonRight.setContentAreaFilled(false);
+		selectButtonRight.setBorderPainted(false);
+		selectButtonRight.addMouseListener(new MouseListener() {
+			public void mousePressed(MouseEvent me) {
+				if (me.getButton() == MouseEvent.BUTTON1) {
+					selectButtonRight.setOpaque(true);
+					selectButtonRight.setContentAreaFilled(true);
+					selectButtonRight.setBorderPainted(true);
+					Data.selected = 2;
+				}
+			}
+
+			public void mouseReleased(MouseEvent me) {
+				if (me.getButton() == MouseEvent.BUTTON1) {
+					selectButtonRight.setOpaque(false);
+					selectButtonRight.setContentAreaFilled(false);
+					selectButtonRight.setBorderPainted(false);
+				}
+			}
+
+			public void mouseEntered(MouseEvent me) {
+			}
+
+			public void mouseExited(MouseEvent me) {
+			}
+
+			public void mouseClicked(MouseEvent me) {
+
+			}
+		});
+		panel.add(selectButtonRight);
 		play = new JButton();
 		play.setText("Play");
 		play.setSize(90, 20);
@@ -1023,9 +1114,13 @@ public class Window1020 extends Window implements Runnable {
 			discard.setVisible(true);
 			discardConfirm.setVisible(false);
 			justDrew.setVisible(false);
+			leftCard.setVisible(false);
+			rightCard.setVisible(false);
+			selectButtonLeft.setEnabled(false);
+			selectButtonRight.setEnabled(false);
 			Data.drewCard = false;
 		}
-		if (Data.phase == 1) {
+		if (Data.phase == 1 || Data.previousPhase == 1) {
 			draw.setEnabled(true);
 			draw.setVisible(true);
 			submit.setEnabled(false);
@@ -1036,6 +1131,10 @@ public class Window1020 extends Window implements Runnable {
 			play.setVisible(true);
 			discard.setEnabled(false);
 			discard.setVisible(true);
+			leftCard.setVisible(false);
+			rightCard.setVisible(false);
+			selectButtonLeft.setEnabled(false);
+			selectButtonRight.setEnabled(false);
 		}
 		if (Data.phase == 2) {
 			draw.setEnabled(false);
@@ -1048,6 +1147,10 @@ public class Window1020 extends Window implements Runnable {
 			play.setVisible(true);
 			discard.setEnabled(true);
 			discard.setVisible(true);
+			leftCard.setVisible(false);
+			rightCard.setVisible(false);
+			selectButtonLeft.setEnabled(false);
+			selectButtonRight.setEnabled(false);
 		}
 		if (Data.phase == 4) {
 			draw.setEnabled(false);
@@ -1060,6 +1163,23 @@ public class Window1020 extends Window implements Runnable {
 			play.setVisible(true);
 			discard.setEnabled(true);
 			discard.setVisible(true);
+		}
+		if(Data.phase == 6) {
+			draw.setEnabled(false);
+			draw.setVisible(false);
+			submit.setEnabled(false);
+			submit.setVisible(false);
+			cancel.setEnabled(false);
+			cancel.setVisible(false);
+			play.setEnabled(false);
+			play.setVisible(false);
+			discard.setEnabled(false);
+			discard.setVisible(false);
+			selectButtonLeft.setVisible(true);
+			selectButtonRight.setVisible(true);
+			selectButtonLeft.setEnabled(true);
+			selectButtonRight.setEnabled(true);
+			DrawChoice();
 		}
 		if(Data.endGame) {
 			panel.setVisible(false);
@@ -1591,6 +1711,45 @@ public class Window1020 extends Window implements Runnable {
 			ScoreBoard.add(score);
 		}
 
+	}
+	
+	public void DrawChoice() {
+		for (JLabel j : choiceLabelsLeft) {
+			leftCard.remove(j);
+		}
+		choiceLabelsLeft.clear();
+		for (JLabel j : choiceLabelsRight) {
+			rightCard.remove(j);
+		}
+		choiceLabelsRight.clear();
+		leftCard.setVisible(true);
+		rightCard.setVisible(true);
+		if(Data.left.suit != -1) {
+			CreateNumberForCard(0, 0, Data.left.suit, Data.left.value - 1, choiceLabelsLeft, leftCard, false);
+			CreateSuitForCard(0, 36, Data.left.suit, choiceLabelsLeft, leftCard);
+			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
+		}
+		else if (Data.left.value == 52) {
+			CreateNumberForCard(4, 18, 52, -1, choiceLabelsLeft, leftCard, true);
+			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
+		} 
+		else {
+			CreateNumberForCard(4, 18, 53, -1, choiceLabelsLeft, leftCard, true);
+			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
+		}
+		if(Data.right.suit != -1) {
+			CreateNumberForCard(0, 0, Data.right.suit, Data.right.value - 1, choiceLabelsRight, rightCard, false);
+			CreateSuitForCard(0, 36, Data.right.suit, choiceLabelsRight, rightCard);
+			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
+		}
+		else if (Data.right.value == 52) {
+			CreateNumberForCard(4, 18, 52, -1, choiceLabelsRight, rightCard, true);
+			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
+		} 
+		else {
+			CreateNumberForCard(4, 18, 53, -1, choiceLabelsRight, rightCard, true);
+			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
+		}		
 	}
 
 	/**

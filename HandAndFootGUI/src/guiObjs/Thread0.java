@@ -68,6 +68,7 @@ public class Thread0 implements Runnable {
 				String message = new String(b);
 				
 				if (message.substring(0, 3).equals("PS:")) {
+					System.out.println("PS: " + message.substring(3, 4).trim());
 					try {
 						if (Data.phase != 5) {
 							Data.phase = Integer.parseInt(message.substring(3, 4).trim());
@@ -273,8 +274,8 @@ public class Thread0 implements Runnable {
 						value = Integer.parseInt(message.substring(5, message.length()).trim());
 					}
 					catch(Exception e) {
-							suit = -1;
-							value = Integer.parseInt(message.substring(6, message.length()).trim());
+						suit = -1;
+						value = Integer.parseInt(message.substring(6, message.length()).trim());
 					}
 					
 					
@@ -294,7 +295,46 @@ public class Thread0 implements Runnable {
 					Data.setUpdate();
 					SendMessage("~");
 				}
-				
+				else if(message.substring(0, 3).equals("SL:")) {
+					SendMessage("" + Data.selected);
+					Data.phase = 0;
+				}
+				else if(message.substring(0, 3).equals("LC:")) {
+					int suit = 0;
+					int value = 0;
+					try {
+						suit = Integer.parseInt(message.substring(3,4).trim());
+						value = Integer.parseInt(message.substring(5, message.length()).trim());
+					}
+					catch(Exception e) {
+						suit = -1;
+						value = Integer.parseInt(message.substring(6, message.length()).trim());
+					}
+					
+					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					System.out.println(suit + " " + value);
+					Data.left.suit = suit;
+					Data.left.value = value;
+					SendMessage("~");
+				}
+				else if(message.substring(0, 3).equals("RC:")) {
+					int suit = 0;
+					int value = 0;
+					try {
+						suit = Integer.parseInt(message.substring(3,4).trim());
+						value = Integer.parseInt(message.substring(5, message.length()).trim());
+					}
+					catch(Exception e) {
+						suit = -1;
+						value = Integer.parseInt(message.substring(6, message.length()).trim());
+					}
+					
+					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					System.out.println(suit + " " + value);
+					Data.right.suit = suit;
+					Data.right.value = value;
+					SendMessage("~");
+				}
 			}
 
 			catch (Exception e) {

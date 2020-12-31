@@ -26,10 +26,6 @@ public class TeamSelect implements Runnable{
 		
 		for(int i = 0; i < Data.usernames.size(); i++) {
 			JButton user = new JButton();
-			JLabel name = new JLabel();
-			name.setText(Data.username);
-			name.setSize(300,20);
-			name.setLocation(300, 300);
 			user.setName(""+i);
 			user.setText(Data.usernames.get(i));
 			user.setSize(300, 30);
@@ -52,7 +48,6 @@ public class TeamSelect implements Runnable{
 				}
 			});
 			panel.add(user);
-			panel.add(name);
 		}
 		
 
