@@ -17,15 +17,27 @@ public class Lobby implements Runnable{
 		panel.setSize(1700, 950);
 		panel.setBackground(new Color(153, 221, 255));
 		
-		JLabel waiting = new JLabel();
-		waiting.setText("Waiting...");
-		waiting.setSize(300,300);
-		waiting.setLocation(0, 0);
-		panel.add(waiting);
+		if(Data.client.isConnected()) {
+			Data.logger.finest("Telling user we are waiting...");
+			JLabel waiting = new JLabel();
+			waiting.setText("Waiting...");
+			waiting.setSize(300,300);
+			waiting.setLocation(0, 0);
+			panel.add(waiting);
+		}
+		else {
+			Data.logger.info("Telling user we cannot connect...");
+			JLabel waiting = new JLabel();
+			waiting.setText("Failed to establish a connection!");
+			waiting.setSize(300,300);
+			waiting.setLocation(0, 0);
+			panel.add(waiting);
+		}
+
 		
 		
 		// frame Code
-		frame = new JFrame("My First GUI");
+		frame = new JFrame("Waiting...");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(350, 350);
@@ -39,15 +51,15 @@ public class Lobby implements Runnable{
 
 	@Override
 	public void run() {
-		System.out.println("3");
+		Data.logger.finest("Starting LobbyWait Process... waiting for more players");
 		LobbyWait();
-		System.out.println("4");
-		
 	}
 	
 	public void start() {
+		Data.logger.fine("Moving from Lobby to TeamSelect");
 		TeamSelect ts = new TeamSelect();
 		Data.ts = ts;
+		Data.logger.finer("Starting TeamSelect Thread");
 		Thread t1 = new Thread(ts);
 		frame.setVisible(false);
 		t1.run();

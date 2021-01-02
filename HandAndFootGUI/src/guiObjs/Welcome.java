@@ -330,11 +330,12 @@ public class Welcome {
 	}
 	
 	public void Jumpship() {
-		
+		Data.logger.info("Moving from Welcome Window to Lobby");
 		frame.setVisible(false);
 		Data.ip = ip.getText();
 		Data.port = port.getText();
 		Data.Resolution = Integer.parseInt(resolution.getText());
+		Data.logger.finer("Connecting to ip " + Data.ip + " on port " + Data.port);
 		if(players.getText() != null) {
 			Data.playerNum = players.getText();
 		}
@@ -344,19 +345,17 @@ public class Welcome {
 		Data.username = username.getText();
 		String serverName = ip.getText();
 		int port = Integer.parseInt(this.port.getText());
-		System.out.print("Connecting...");
 		try {
+			Data.logger.info("Establishing connection");
 			Socket client = new Socket(serverName, port);
 			Data.client = client;
+			
 
 		} catch (IOException e) {
-			System.out.println("uhh");
+			Data.logger.severe("Failed to establish connection! Check the internet (and Google).");
 			e.printStackTrace();
 		}
-		System.out.println("uhh");
 		
 		Data.connected = true;
 	}
-	
-
 }

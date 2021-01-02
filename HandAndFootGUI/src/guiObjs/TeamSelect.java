@@ -32,6 +32,7 @@ public class TeamSelect implements Runnable{
 			user.setLocation(60, 90+(i*40));
 			user.addMouseListener(new MouseListener() {
 				public void mousePressed(MouseEvent me) {
+					Data.logger.finest("User selected " + user.getName());
 					Data.selectedTeam = Integer.parseInt(user.getName());
 				}
 
@@ -66,6 +67,7 @@ public class TeamSelect implements Runnable{
 			}
 			start.addMouseListener(new MouseListener() {
 				public void mousePressed(MouseEvent me) {
+					Data.logger.fine("User who created the game has started the game.");
 					Data.th.SendMessage("~");
 				}
 
@@ -99,22 +101,24 @@ public class TeamSelect implements Runnable{
 
 	@Override
 	public void run() {
-		System.out.println("3");
+		Data.logger.finer("Waiting for players to select their teams and Creator to start game");
 		TeamSelectWait();
-		System.out.println("4");
-		
 	}
 	
 	public void start() {
+		Data.logger.info("Game is starting");
 		Window w = null;
 		if(Data.Resolution == 1700) {
+			Data.logger.finest("Resolution has been set to 1700");
 			w = new Window1700();
 		}
 		else if(Data.Resolution == 1020) {
+			Data.logger.finest("Resolution has been set to 1020");
 			w = new Window1020();
 		}
 		frame.setVisible(false);
 		Data.w = w;
+		Data.logger.info("Starting game window thread now!");
 		Thread t1 = new Thread(w);
 		t1.run();
 

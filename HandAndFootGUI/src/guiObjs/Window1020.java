@@ -119,12 +119,14 @@ public class Window1020 extends Window implements Runnable {
 
 
 		try {
+			Data.logger.finest("Creating Wreath");
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/Wreath.png"));
 			JLabel wreath = new JLabel(new ImageIcon(image));
 			wreath.setSize(600, 240);
 			wreath.setLocation(210, 54);
 			panel.add(wreath);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE WREATH : " + ex.toString());
 			ex.printStackTrace();
 		}
 		
@@ -140,6 +142,7 @@ public class Window1020 extends Window implements Runnable {
 			lightGreen.setVisible(false);
 			panel.add(lightGreen);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE lightGreen : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -151,6 +154,7 @@ public class Window1020 extends Window implements Runnable {
 			darkGreen.setVisible(false);
 			panel.add(darkGreen);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE darkGreen : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -162,6 +166,7 @@ public class Window1020 extends Window implements Runnable {
 			yellow.setVisible(false);
 			panel.add(yellow);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE yellow : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -173,6 +178,7 @@ public class Window1020 extends Window implements Runnable {
 			orange.setVisible(false);
 			panel.add(orange);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE orange : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -184,6 +190,7 @@ public class Window1020 extends Window implements Runnable {
 			lightRed.setVisible(false);
 			panel.add(lightRed);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE lightRed : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -195,6 +202,7 @@ public class Window1020 extends Window implements Runnable {
 			darkRed.setVisible(false);
 			panel.add(darkRed);
 		} catch (IOException ex) {
+			Data.logger.warning("FAILED TO CREATE darkRed : " + ex.toString());
 			ex.printStackTrace();
 		}
 
@@ -1096,6 +1104,7 @@ public class Window1020 extends Window implements Runnable {
 
 	@Override
 	public void ServerUpdate() {
+		Data.logger.info("Been instructed to redraw the screen");
 		DrawHand();
 		DrawPile();
 		DrawGroups();

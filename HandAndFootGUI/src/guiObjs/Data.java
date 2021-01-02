@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -57,6 +58,7 @@ public class Data {
 	public static int selected;
 	public static Card left;
 	public static Card right;
+	public static Logger logger;
 	
 	public static void InitData() {
 		CurrentTurn = 0;
