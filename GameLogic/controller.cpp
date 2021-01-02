@@ -27,6 +27,7 @@ int players;
 bool wait;
 vector<std::string> usernames;
 vector<int> controlled;
+int code;
 
 /*
     Splits a string into a vector upon a given token
@@ -49,8 +50,10 @@ vector<string> split(string str, string token){
 
 int vals[13] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
 
-Controller::Controller(int teams){
-    
+Controller::Controller(int teams, int code, Client c){
+    b = new BoardState(teams);
+    players = teams*2;
+    clients.push_back(c);
 }
 
 Controller::~Controller(){
@@ -60,6 +63,36 @@ Controller::~Controller(){
 
 // THIS WILL HAVE TO BE MODIFIED FOR SERVER/CLIENT COMMUNICATIONS
 void Controller::play(){
+
+    std::string input;
+    vector<std::string> joinOrder;
+    for(int i = 0; i < players; i++){
+        PreSendPlayerInfo(i, "GU:" + to_string(i) + " " + to_string(players));
+        input = PreRead(i);
+        joinOrder.push_back(input);
+        input = "";
+    }
+    for(int i = 0; i < players; i++){
+        for(int j = 0; j < players; j++){
+            PreSendPlayerInfo(i, "US:" + to_string(j) + " " + joinOrder[j]);
+            PreRead(i);
+        }
+        PreSendPlayerInfo(i, "LB:");
+        PreRead(i);
+    }
+
+    PreRead(0);
+    vector<int> selected;
+    vector<int> correctPairs;
+    for(int i = 0; i < players; i++){
+        std::string input;
+        PreSendPlayerInfo(i, "SC:");
+        input = PreRead(i);
+        selected.push_back(std::stoi(input));
+    }
+
+    correctPairs = Pairing(selected);
+    controlled = TurnOrder(correctPairs);
 
     std::string input;
     for(int i = 0; i < players; i++){
@@ -622,128 +655,6 @@ std::string Controller::StringGroup(int PlayerID, vector<Player*> turn){
     return m.str();
 }
 
-int Controller::SetUpServer(){
-    ThreadID = 0;
-    wait = true;
-    players = 10000000;
-
-    buffer[4096] = {0}; 
-
-    // Creating socket file descriptor 
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
-    { 
-        perror("socket failed"); 
-        exit(EXIT_FAILURE); 
-    } 
-       
-    // Forcefully attaching socket to the port 8080 
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
-                                                  &opt, sizeof(opt))) 
-    { 
-        perror("setsockopt"); 
-        exit(EXIT_FAILURE); 
-    } 
-    address.sin_family = AF_INET; 
-    address.sin_addr.s_addr = INADDR_ANY; 
-    address.sin_port = htons( PORT ); 
-       
-    // Forcefully attaching socket to the port 8080 
-    if (bind(server_fd, (struct sockaddr *)&address,  
-                                 sizeof(address))<0) 
-    { 
-        perror("bind failed"); 
-        exit(EXIT_FAILURE); 
-    }
-    ListenForNewClients();
-    return 0;
-}
-
-void test(int threadid){
-    while(true){
-
-    }
-}
-
-void Controller::ListenForNewClients(){
-    while(true){
-        Client c;
-        if (listen(server_fd, 3) < 0) 
-        { 
-            perror("listen"); 
-            exit(EXIT_FAILURE); 
-        } 
-        if ((c.socket = accept(server_fd, (struct sockaddr *)&address,  
-                        (socklen_t*)&addrlen))<0) 
-        { 
-            perror("accept"); 
-            exit(EXIT_FAILURE); 
-        } 
-
-        std::cout << "Someone try to connect!" << std::endl;
-
-        std::cout << "Someone connected!" << std::endl;
-        clients.push_back(c);
-        
-        if(ThreadID == 0){
-            std::cout << "Top" << std::endl;
-            valread = read(clients[0].socket, buffer, sizeof(buffer)); 
-            std::stringstream input(buffer);
-            int t;
-            input >> t;
-            players = t;
-            std::cout << "Num of players is " << players << std::endl;
-            b = new BoardState(players/2);
-            buffer[4096] = {0}; 
-        }
-        else{
-            buffer[4096] = {0}; 
-            std::cout << "mid" << std::endl;
-            valread = read(clients[ThreadID].socket, buffer, sizeof(buffer)); 
-            std::stringstream input(buffer);
-            buffer[4096] = {0}; 
-        }
-
-        ThreadID++;
-
-        if(ThreadID == players){
-            std::cout << clients.size() << std::endl;
-            std::string input;
-            vector<std::string> joinOrder;
-            for(int i = 0; i < players; i++){
-                PreSendPlayerInfo(i, "GU:" + to_string(i) + " " + to_string(players));
-                input = PreRead(i);
-                std::cout << input << std::endl;
-                joinOrder.push_back(input);
-                input = "";
-            }
-            for(int i = 0; i < players; i++){
-                for(int j = 0; j < players; j++){
-                    PreSendPlayerInfo(i, "US:" + to_string(j) + " " + joinOrder[j]);
-                    PreRead(i);
-                }
-                PreSendPlayerInfo(i, "LB:");
-                PreRead(i);
-            }
-
-            PreRead(0);
-            vector<int> selected;
-            vector<int> correctPairs;
-            for(int i = 0; i < players; i++){
-                std::string input;
-                PreSendPlayerInfo(i, "SC:");
-                input = PreRead(i);
-                selected.push_back(std::stoi(input));
-            }
-            std::cout << "1" << std::endl;
-            correctPairs = Pairing(selected);
-            std::cout << "2!" << std::endl;
-            controlled = TurnOrder(correctPairs);
-            std::cout << "3" << std::endl;
-
-            play();
-        }
-    }
-}
 
 vector<int> Controller::TurnOrder(vector<int> correctPairs){
     vector<bool> assigned;
@@ -871,4 +782,10 @@ std::string Controller::Read(int i){
     std::cout << input << std::endl;
     std::fill_n(buffer, 4096, 0);
     return input;
+}
+
+void Controller::AcceptNewClient(Client c){
+
+    clients.push_back(c);
+
 }

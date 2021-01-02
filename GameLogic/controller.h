@@ -43,9 +43,7 @@ class Controller{
         // Determines the entire game.
         void play();
         std::string Read(int i);
-        int SetUpServer();
         void CountDown(int threadid);
-        void ListenForNewClients();
         void SendPlayerInfo(int PlayerId, std::string message);
         vector<int> Pairing(vector<int> selected);
         std::string StringHand(int playerID, vector<Player*> turn);
@@ -55,6 +53,7 @@ class Controller{
         std::string PreRead(int i);
         vector<vector<int>> enumeratedPairings(int k);
         int score(vector<int> pairs, vector<int> selected);
+        void AcceptNewClient(Client c);
 };
 
 #endif

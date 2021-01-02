@@ -59,6 +59,7 @@ public class Data {
 	public static Card left;
 	public static Card right;
 	public static Logger logger;
+	public static int code;
 	
 	public static void InitData() {
 		CurrentTurn = 0;

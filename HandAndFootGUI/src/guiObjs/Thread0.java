@@ -393,8 +393,15 @@ public class Thread0 implements Runnable {
 					Data.logger.finer("Message parsed, data gathered, sending back confirmation");
 					SendMessage("~");
 				}
+			else if(message.substring(0, 3).equals("CO:")) {
+				try {
+					Data.code = Integer.parseInt(message.substring(3,message.length()).trim());
+				}
+				catch(Exception e) {
+					
+				}
 			}
-
+		}
 			catch (Exception e) {
 
 			}

@@ -22,7 +22,7 @@ public class Run {
 	public static void main(String[] args) {
 		Data.InitData();
 	    Logger logger = Logger.getLogger("MyLog");  
-	    logger.setLevel(Level.FINEST);
+	    logger.setLevel(Level.WARNING);
 	    FileHandler fh;  
 	    
 	    DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("dd-MM-yyyy~HH-mm-ss");
@@ -58,9 +58,7 @@ public class Run {
 		
 		Data.logger.finest("Starting while loop to ensure thread does not die...");
 		while(!Data.connected) {
-			i++;
-			i--;
-			System.out.println(i);
+			System.out.println("");
 		}
 		
 		Data.logger.finer("Creating Thread0");
@@ -74,10 +72,9 @@ public class Run {
 		Data.logger.finer("Creating Thread0 Thread");
 		Thread t2 = new Thread(th);
 		
-		if(!Data.playerNum.equals("-1")) {
-			Data.logger.finest("Player must have selected create game because Data.playerNum is " + Data.playerNum);
-			Data.th.SendMessage(Data.playerNum + " " + Data.username);
-		}
+		Data.logger.finest("Player must have selected create game because Data.playerNum is " + Data.playerNum);
+		Data.th.SendMessage("" + Data.playerNum);
+
 		Data.logger.finer("Starting Thread0, here we go.");
 		t2.run();
 		
