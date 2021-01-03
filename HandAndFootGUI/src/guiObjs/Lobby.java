@@ -1,10 +1,12 @@
 package guiObjs;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 public class Lobby implements Runnable{
 	protected static JFrame frame;
@@ -19,15 +21,17 @@ public class Lobby implements Runnable{
 		
 		if(Data.client.isConnected()) {
 			Data.logger.finest("Telling user we are waiting...");
-			JLabel waiting = new JLabel();
+			JLabel waiting = new JLabel("Waiting...", SwingConstants.CENTER);
+			waiting.setFont(new Font("Serif", Font.PLAIN, 25));
 			waiting.setText("Waiting...");
-			waiting.setSize(300,20);
+			waiting.setSize(350,30);
 			waiting.setLocation(0, 0);
 			panel.add(waiting);
-			JLabel code = new JLabel();
-			code.setText(""+Data.code);
-			code.setSize(300,20);
-			code.setLocation(0, 30);
+			JLabel code = new JLabel("Room Code: " + Data.code, SwingConstants.CENTER);
+			code.setFont(new Font("Serif", Font.PLAIN, 25));
+			code.setText("Room Code: " + Data.code);
+			code.setSize(350,30);
+			code.setLocation(0, 50);
 			panel.add(code);
 		}
 		else {

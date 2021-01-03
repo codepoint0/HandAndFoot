@@ -1,6 +1,7 @@
 package guiObjs;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 public class Welcome {
 	
@@ -38,16 +40,17 @@ public class Welcome {
 		players = new JTextField();
 		players.setText("");
 		
-		JLabel waiting = new JLabel();
+		JLabel waiting = new JLabel("Hand And Foot", SwingConstants.CENTER);
 		waiting.setText("Hand And Foot");
-		waiting.setSize(130,10);
-		waiting.setLocation(570, 0);
+		waiting.setFont(new Font("Serif", Font.BOLD, 50));
+		waiting.setSize(1280,90);
+		waiting.setLocation(0, 0);
 		panel.add(waiting);
 		
 		join = new JButton();
 		join.setText("Join Game");
 		join.setSize(130,30);
-		join.setLocation(570,30);
+		join.setLocation(570,120);
 		join.addMouseListener(new MouseListener() {
 			
 			public void mousePressed(MouseEvent me) {
@@ -66,11 +69,11 @@ public class Welcome {
 
 			public void mouseClicked(MouseEvent me) {
 				Clicked = 1;
-				create.setLocation(570, 230);
+				create.setLocation(570, 320);
 				ip = new JTextField();
 				ip.setText("192.168.1.47");
 				ip.setSize(130, 30);
-				ip.setLocation(570, 70);
+				ip.setLocation(570, 160);
 				ip.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -94,7 +97,7 @@ public class Welcome {
 				port = new JTextField();
 				port.setText("8080");
 				port.setSize(130, 30);
-				port.setLocation(570, 110);
+				port.setLocation(570, 200);
 				port.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -119,7 +122,7 @@ public class Welcome {
 				username = new JTextField();
 				username.setText("username");
 				username.setSize(130, 30);
-				username.setLocation(570, 150);
+				username.setLocation(570, 240);
 				username.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -144,7 +147,7 @@ public class Welcome {
 				code = new JTextField();
 				code.setText("CODE");
 				code.setSize(130, 30);
-				code.setLocation(570, 190);
+				code.setLocation(570, 280);
 				code.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -172,7 +175,7 @@ public class Welcome {
 		create = new JButton();
 		create.setText("Create Game");
 		create.setSize(130,30);
-		create.setLocation(570,70);
+		create.setLocation(570,160);
 		create.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
 				if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -192,7 +195,7 @@ public class Welcome {
 				ip = new JTextField();
 				ip.setText("192.168.1.47");
 				ip.setSize(130, 30);
-				ip.setLocation(570, 110);
+				ip.setLocation(570, 200);
 				ip.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -216,7 +219,7 @@ public class Welcome {
 				port = new JTextField();
 				port.setText("8080");
 				port.setSize(130, 30);
-				port.setLocation(570, 150);
+				port.setLocation(570, 240);
 				port.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -240,7 +243,7 @@ public class Welcome {
 				players = new JTextField();
 				players.setText("4");
 				players.setSize(130, 30);
-				players.setLocation(570, 190);
+				players.setLocation(570, 280);
 				players.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -264,7 +267,7 @@ public class Welcome {
 				username = new JTextField();
 				username.setText("username");
 				username.setSize(130, 30);
-				username.setLocation(570, 230);
+				username.setLocation(570, 320);
 				username.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -292,7 +295,7 @@ public class Welcome {
 		connect = new JButton();
 		connect.setText("Connect");
 		connect.setSize(300,60);
-		connect.setLocation(500,300);
+		connect.setLocation(500,400);
 		connect.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
 				if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -323,7 +326,7 @@ public class Welcome {
 		resolution = new JTextField();
 		resolution.setText("1020");
 		resolution.setSize(130, 30);
-		resolution.setLocation(570, 370);
+		resolution.setLocation(570, 470);
 		resolution.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
 				if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -348,7 +351,7 @@ public class Welcome {
 		
 		
 		// frame Code
-		frame = new JFrame("My First GUI");
+		frame = new JFrame("Hand And Foot");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(1280, 720);
