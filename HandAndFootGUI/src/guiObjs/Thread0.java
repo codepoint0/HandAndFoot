@@ -17,6 +17,7 @@ import guiObjs.Window1700;
 public class Thread0 implements Runnable {
 	byte[] b = new byte[4096];
 	public Socket client;
+	final DataOutputStream out;
 
 	public static String[] pipeSplit(String s, char d) {
 		ArrayList<String> t = new ArrayList<String>();
@@ -38,20 +39,26 @@ public class Thread0 implements Runnable {
 
 	public Thread0(Socket client) {
 		this.client = client;
+		OutputStream outToServer = null;
+		try {
+			outToServer = client.getOutputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		out = new DataOutputStream(outToServer);
+		
 	}
 
 	public void SendMessage(String message) { 
 		Data.logger.info("Sending: " + message);
-		OutputStream outToServer;
+
 		try {
 			byte[] OutBuffer = new byte[4096];
-			outToServer = client.getOutputStream();
-			DataOutputStream out = new DataOutputStream(outToServer);
 			OutBuffer = message.getBytes();
 			System.out.println(message);
 			out.write(OutBuffer);
-			Data.logger.fine("Message was sent!");
-			
+			Data.logger.fine("Message was sent!");	
 		} catch (IOException e) {
 			Data.logger.severe("FAILED TO SEND MESSAGE: " + e.getMessage());
 			// TODO Auto-generated catch block
@@ -61,6 +68,7 @@ public class Thread0 implements Runnable {
 
 	@Override
 	public void run() {
+		SendMessage(Data.playerNum);
 		while (client.isConnected()) {
 			try {
 				InputStream inFromServer = client.getInputStream();
@@ -282,6 +290,7 @@ public class Thread0 implements Runnable {
 						Data.logger.finest("User is user 0");
 						Data.Original = true;
 					}
+					Data.playerNum = message.substring(5, message.length()).trim();
 					Data.logger.finer("Message parsed, data gathered, sending back confirmation");
 					SendMessage(Data.username);
 				}
@@ -407,7 +416,56 @@ public class Thread0 implements Runnable {
 			}
 
 		}
+		
+		
 
+
+	}
+	
+	public void Code() {
+		InputStream inFromServer = null;
+		try {
+			inFromServer = Data.client.getInputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DataInputStream in = new DataInputStream(inFromServer);
+		byte[] b = new byte[4096];
+		
+		System.out.println("Code:" + Data.playerNum);
+		
+		
+		Data.logger.info("Sending: " + Data.playerNum);
+		
+		try {
+			byte[] OutBuffer = new byte[4096];
+			OutBuffer = Data.playerNum.getBytes();
+			out.write(OutBuffer);
+			Data.logger.fine("Message was sent!");	
+		} catch (IOException e) {
+			Data.logger.severe("FAILED TO SEND MESSAGE: " + e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Data.logger.finest("Ready to read from SERVER");
+		try {
+			in.read(b);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		String message = new String(b);
+		try {
+			Data.code = Integer.parseInt(message.substring(3,message.length()).trim());
+		}
+		catch(Exception e) {
+			Data.code = -1;
+		}
+
+		
+		System.out.println("ABC" + message);
 	}
 
 }

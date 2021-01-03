@@ -24,7 +24,10 @@ public class Welcome {
 	protected static JTextField username;
 	protected static JButton connect;
 	protected static JTextField resolution;
+	protected static JTextField code;
+	protected static int Clicked = 0;
 	boolean Connect;
+	
 	
 	public Welcome() {
 		panel = new JPanel();
@@ -46,6 +49,7 @@ public class Welcome {
 		join.setSize(130,30);
 		join.setLocation(570,30);
 		join.addMouseListener(new MouseListener() {
+			
 			public void mousePressed(MouseEvent me) {
 				if (me.getButton() == MouseEvent.BUTTON1) {}
 			}
@@ -61,9 +65,10 @@ public class Welcome {
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				create.setLocation(570, 190);
+				Clicked = 1;
+				create.setLocation(570, 230);
 				ip = new JTextField();
-				ip.setText("35.155.50.243");
+				ip.setText("192.168.1.47");
 				ip.setSize(130, 30);
 				ip.setLocation(570, 70);
 				ip.addMouseListener(new MouseListener() {
@@ -136,6 +141,30 @@ public class Welcome {
 				});
 				panel.add(username);
 				
+				code = new JTextField();
+				code.setText("CODE");
+				code.setSize(130, 30);
+				code.setLocation(570, 190);
+				code.addMouseListener(new MouseListener() {
+					public void mousePressed(MouseEvent me) {
+						if (me.getButton() == MouseEvent.BUTTON1) {}
+					}
+
+					public void mouseReleased(MouseEvent me) {
+						if (me.getButton() == MouseEvent.BUTTON1) {}
+					}
+
+					public void mouseEntered(MouseEvent me) {
+					}
+
+					public void mouseExited(MouseEvent me) {
+					}
+
+					public void mouseClicked(MouseEvent me) {
+						code.setText("");
+					}
+				});
+				panel.add(code);
 				
 			}
 		});
@@ -161,7 +190,7 @@ public class Welcome {
 
 			public void mouseClicked(MouseEvent me) {
 				ip = new JTextField();
-				ip.setText("35.155.50.243");
+				ip.setText("192.168.1.47");
 				ip.setSize(130, 30);
 				ip.setLocation(570, 110);
 				ip.addMouseListener(new MouseListener() {
@@ -209,7 +238,7 @@ public class Welcome {
 				});
 				panel.add(port);
 				players = new JTextField();
-				players.setText("2");
+				players.setText("4");
 				players.setSize(130, 30);
 				players.setLocation(570, 190);
 				players.addMouseListener(new MouseListener() {
@@ -336,13 +365,14 @@ public class Welcome {
 		Data.port = port.getText();
 		Data.Resolution = Integer.parseInt(resolution.getText());
 		Data.logger.finer("Connecting to ip " + Data.ip + " on port " + Data.port);
-		if(players.getText() != null) {
+		if(Clicked == 0) {
 			Data.playerNum = players.getText();
 		}
 		else {
-			Data.playerNum = "-1";
+			Data.playerNum = code.getText();
 		}
 		Data.username = username.getText();
+		System.out.println(Data.username);
 		String serverName = ip.getText();
 		int port = Integer.parseInt(this.port.getText());
 		try {

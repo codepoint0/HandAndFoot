@@ -1,7 +1,11 @@
 package runner;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,8 +58,6 @@ public class Run {
 		Data.l = l;
 		Data.ts = ts;
 		
-		int i = 0;
-		
 		Data.logger.finest("Starting while loop to ensure thread does not die...");
 		while(!Data.connected) {
 			System.out.println("");
@@ -67,13 +69,15 @@ public class Run {
 		Thread t1 = new Thread(l);
 		
 		Data.logger.info("Starting Lobby Window Thread");
+		
+		th.Code();
+		
 		t1.run();
 
 		Data.logger.finer("Creating Thread0 Thread");
 		Thread t2 = new Thread(th);
 		
-		Data.logger.finest("Player must have selected create game because Data.playerNum is " + Data.playerNum);
-		Data.th.SendMessage("" + Data.playerNum);
+
 
 		Data.logger.finer("Starting Thread0, here we go.");
 		t2.run();

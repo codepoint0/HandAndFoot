@@ -83,6 +83,7 @@ public class Data {
 		left = new Card(0, 0, 0);
 		right = new Card(0, 0, 0);
 		selected = 1;
+		username = "";
 		
 		for(int i = 0; i < 11; i++) {
 			ArrayList<Card> s = new ArrayList<Card>();

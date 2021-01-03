@@ -21,9 +21,14 @@ public class Lobby implements Runnable{
 			Data.logger.finest("Telling user we are waiting...");
 			JLabel waiting = new JLabel();
 			waiting.setText("Waiting...");
-			waiting.setSize(300,300);
+			waiting.setSize(300,20);
 			waiting.setLocation(0, 0);
 			panel.add(waiting);
+			JLabel code = new JLabel();
+			code.setText(""+Data.code);
+			code.setSize(300,20);
+			code.setLocation(0, 30);
+			panel.add(code);
 		}
 		else {
 			Data.logger.info("Telling user we cannot connect...");
