@@ -32,6 +32,12 @@ struct Client{
     int socket;
 };
 
+struct DeadThreadException : public std::exception{
+    const char * what() const throw(){
+        return "";
+    }
+};
+
 class Controller{
     private:
         

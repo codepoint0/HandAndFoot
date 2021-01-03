@@ -15,6 +15,7 @@ int main(int argc, char const *argv[])
     }
 }
 
+
 Server::~Server(){
     for(int i = 0; i < games.size(); i++){
         delete games[i];
@@ -23,6 +24,9 @@ Server::~Server(){
 
 void Server::SetUpServer(){
     buffer[4096] = {0}; 
+    for(int i = 0; i < 100; i++){
+        exists[i] = false;
+    }
 
     // Creating socket file descriptor 
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
@@ -52,8 +56,19 @@ void Server::SetUpServer(){
     ListenForNewClients();
 }
 
+void Server::CloseConnections(){
+    for(int i = 0; i < 100; i++){
+        if(thds[i].joinable()){
+            thds[i].join();
+            exists[i] = false;
+        }
+    }
+}
+
 void Server::ListenForNewClients(){
     srand(time(NULL));
+    thread s = std::thread(&Server::CloseConnections, this);
+    s.detach();
     while(true){
         Client c;
         if (listen(server_fd, 3) < 0) 
@@ -65,8 +80,12 @@ void Server::ListenForNewClients(){
                         (socklen_t*)&addrlen))<0) 
         { 
             perror("accept"); 
-            exit(EXIT_FAILURE); 
-        } 
+            exit(EXIT_FAILURE);
+        }
+
+
+
+
 
         std::cout << "Waiting" << std::endl;
         valread = read(c.socket, buffer, sizeof(buffer)); 
@@ -96,8 +115,15 @@ void Server::ListenForNewClients(){
                     std::string conf = "CO:" + to_string(games[i]->code);
                     send(c.socket , conf.c_str(), strlen(conf.c_str()) , 0 );
                     if(games[i]->b->teams*2 == games[i]->clients.size()){
-                        thread s = std::thread(&Controller::play, games[i]);
-                        s.detach();
+                        int j = 0;
+                        while(exists[j]){
+                            j++;
+                            if(j == 99){
+                                j = 0;
+                            }
+                        }
+                        thds[j] = std::thread(&Controller::play, games[i]);
+                        exists[j] = true;
                         std::cout << "abc" << std::endl;
                     }
                 }

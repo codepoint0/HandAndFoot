@@ -170,6 +170,9 @@ void Controller::play(){
                 SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
                 Read(i);
             }
+            catch(DeadThreadException e){
+                throw e;
+            }
             catch(exception e){
                 SendPlayerInfo(i, "TC:0 0 0");
                 Read(i);
@@ -243,6 +246,9 @@ void Controller::play(){
                 SendPlayerInfo(currentTurn, "PN:" + to_string(b->b->pile.size()));
                 Read(currentTurn);
             }
+            catch(DeadThreadException e){
+                throw e;
+            }
             catch(exception e){
                 SendPlayerInfo(currentTurn, "TC:0 0 0");
                 Read(currentTurn);
@@ -280,6 +286,9 @@ void Controller::play(){
                     Read(i);
                     SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
                     Read(i);
+                }
+                catch(DeadThreadException e){
+                    throw e;
                 }
                 catch(exception e){
                     SendPlayerInfo(i, "TC:0 0 0");
@@ -353,8 +362,8 @@ void Controller::play(){
                         c[i] = cards;
                     }
                 }
-                catch(exception e){
-
+                catch(DeadThreadException e){
+                    throw e;
                 }
                 try{
                     turn[currentTurn]->play(c);
@@ -370,6 +379,9 @@ void Controller::play(){
                     if(!turn[currentTurn]->team->meld){
                         turn[currentTurn]->team->meld = true;
                     }
+                }
+                catch(DeadThreadException e){
+                    throw e;
                 }
                 catch(exception e){
                     std::stringstream s;
@@ -486,6 +498,9 @@ void Controller::play(){
                         Read(i);
                         SendPlayerInfo(i, "PN:" + to_string(b->b->pile.size()));
                         Read(i);
+                    }
+                    catch(DeadThreadException e){
+                        throw e;
                     }
                     catch(exception e){
                         SendPlayerInfo(i, "TC:0 0 0");
@@ -617,6 +632,7 @@ void Controller::play(){
         }
     }
     catch(exception e){
+        std::cout << "CATCH" << std::endl;
         return;
     }
 }
@@ -753,20 +769,32 @@ vector<int> Controller::Pairing(vector<int> selected)
 }
 
 void Controller::PreSendPlayerInfo(int playerID, std::string message){
-    std::fill_n(buffer, 4096, 0);
-    std::cout << message << std::endl;
-    send(clients[playerID].socket , message.c_str() , strlen(message.c_str()) , 0 );
-    std::fill_n(buffer, 4096, 0);
+    try{
+        std::fill_n(buffer, 4096, 0);
+        std::cout << message << std::endl;
+        send(clients[playerID].socket , message.c_str() , strlen(message.c_str()) , 0 );
+        std::fill_n(buffer, 4096, 0);
+    }
+    catch(exception e){
+        throw DeadThreadException();
+    }
 }
 
 std::string Controller::PreRead(int i){
-    std::fill_n(buffer, 4096, 0);
-    std::string valread;
-    valread = read(clients[i].socket, buffer, sizeof(buffer)); 
-    std::string input = buffer;
-    std::cout << "PREREAD: " << input << std::endl;
-    std::fill_n(buffer, 4096, 0);
-    return input;
+    try{
+        std::fill_n(buffer, 4096, 0);
+        int valread;
+        valread = read(clients[i].socket, buffer, sizeof(buffer));
+        if(valread < 1){
+            throw DeadThreadException();
+        } 
+        std::string input = buffer;
+        std::fill_n(buffer, 4096, 0);
+        return input;
+    }
+    catch(exception e){
+        throw DeadThreadException();
+    }
 }
 
 
@@ -777,21 +805,26 @@ void Controller::SendPlayerInfo(int playerID, std::string message){
         send(clients[controlled[playerID]].socket , message.c_str() , strlen(message.c_str()) , 0 );
         std::fill_n(buffer, 4096, 0);
     }
-    catch(exception e){}
+    catch(exception e){
+        throw DeadThreadException();
+    }
 }
 
 std::string Controller::Read(int i){
     try{
         std::fill_n(buffer, 4096, 0);
-        std::string valread;
-        valread = read(clients[controlled[i]].socket, buffer, sizeof(buffer)); 
+        int valread;
+        valread = read(clients[controlled[i]].socket, buffer, sizeof(buffer));
+        if(valread < 1){
+            throw DeadThreadException();
+        }
         std::string input = buffer;
         std::cout << input << std::endl;
         std::fill_n(buffer, 4096, 0);
         return input;
     }
     catch(exception e){
-        return "666";
+        throw DeadThreadException();
     }
 }
 

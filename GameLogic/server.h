@@ -53,11 +53,14 @@ class Server{
     vector<int> codes;
     int runningGames;
     thread thds[100];
+    bool exists[100];
+    
 
     ~Server();
 
     void SetUpServer();
     void ListenForNewClients();
+    void CloseConnections();
 };
 
 #endif
