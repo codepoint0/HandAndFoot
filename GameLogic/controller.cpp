@@ -10,24 +10,7 @@
 #include <iostream>
 #include <string>
 #include "controller.h"
-char* message;
-char buffer[4096];
-int new_socket;
-int valread;
-int server_fd;
-struct sockaddr_in address; 
-int opt = 1; 
-int addrlen = sizeof(address);
-std::thread threads[10];
-int rc;
-int ThreadID = 0;
-std::mutex mtx;
-vector<Client> clients;
-int players;
-bool wait;
-vector<std::string> usernames;
-vector<int> controlled;
-int code;
+
 
 /*
     Splits a string into a vector upon a given token
@@ -53,7 +36,13 @@ int vals[13] = {20, 20, 100, 5, 5, 5, 5, 5, 10, 10, 10, 10, 10};
 Controller::Controller(int teams, int code, Client c){
     b = new BoardState(teams);
     players = teams*2;
+    this->code = code;
     clients.push_back(c);
+    buffer[4096] = {0};
+}
+
+Controller::Controller(const Controller& ctr){
+
 }
 
 Controller::~Controller(){
@@ -63,15 +52,23 @@ Controller::~Controller(){
 
 // THIS WILL HAVE TO BE MODIFIED FOR SERVER/CLIENT COMMUNICATIONS
 void Controller::play(){
+    std::fill_n(buffer, 4096, 0);
+    for(int i = 0; i < players; i++){
+        PreRead(i);
+    }
 
     std::string input;
     vector<std::string> joinOrder;
     for(int i = 0; i < players; i++){
+        std::string username;
         PreSendPlayerInfo(i, "GU:" + to_string(i) + " " + to_string(players));
-        input = PreRead(i);
-        joinOrder.push_back(input);
-        input = "";
+        username = PreRead(i);
+        joinOrder.push_back(username);
     }
+    for(int i = 0; i < joinOrder.size(); i++){
+        std::cout << "JOIN ORDER: " << joinOrder[i] << std::endl;
+    }
+
     for(int i = 0; i < players; i++){
         for(int j = 0; j < players; j++){
             PreSendPlayerInfo(i, "US:" + to_string(j) + " " + joinOrder[j]);
@@ -85,7 +82,6 @@ void Controller::play(){
     vector<int> selected;
     vector<int> correctPairs;
     for(int i = 0; i < players; i++){
-        std::string input;
         PreSendPlayerInfo(i, "SC:");
         input = PreRead(i);
         selected.push_back(std::stoi(input));
@@ -94,7 +90,6 @@ void Controller::play(){
     correctPairs = Pairing(selected);
     controlled = TurnOrder(correctPairs);
 
-    std::string input;
     for(int i = 0; i < players; i++){
         SendPlayerInfo(i, "SG:" + to_string(i) + " " + to_string(players));
         input = Read(i);
@@ -557,6 +552,7 @@ void Controller::play(){
                             Read(i);
                         }  
                     }
+                    delete this;
                 }
             }
         }
@@ -752,9 +748,10 @@ vector<int> Controller::Pairing(vector<int> selected)
 }
 
 void Controller::PreSendPlayerInfo(int playerID, std::string message){
+    std::fill_n(buffer, 4096, 0);
     std::cout << message << std::endl;
     send(clients[playerID].socket , message.c_str() , strlen(message.c_str()) , 0 );
-    buffer[4096] = {0};
+    std::fill_n(buffer, 4096, 0);
 }
 
 std::string Controller::PreRead(int i){
@@ -762,16 +759,17 @@ std::string Controller::PreRead(int i){
     std::string valread;
     valread = read(clients[i].socket, buffer, sizeof(buffer)); 
     std::string input = buffer;
-    std::cout << input << std::endl;
+    std::cout << "PREREAD: " << input << std::endl;
     std::fill_n(buffer, 4096, 0);
     return input;
 }
 
 
 void Controller::SendPlayerInfo(int playerID, std::string message){
+    std::fill_n(buffer, 4096, 0);
     std::cout << message << std::endl;
     send(clients[controlled[playerID]].socket , message.c_str() , strlen(message.c_str()) , 0 );
-    buffer[4096] = {0};
+    std::fill_n(buffer, 4096, 0);
 }
 
 std::string Controller::Read(int i){

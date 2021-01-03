@@ -24,6 +24,7 @@
 #include <mutex> 
 #include <iostream>
 #include <exception>
+#include <algorithm>
 #define PORT 8080 
 
 #include "controller.h"
@@ -31,15 +32,29 @@
 struct CtrCodePair{
     int index;
     int code;
-}
+};
 
 class Server{
     private:
     public:
+    char buffer[4096];
+    int new_socket;
+    int valread;
+    int server_fd;
+    struct sockaddr_in address; 
+    int opt = 1; 
+    int addrlen = sizeof(address);
+    int rc;
+    int ThreadID = 0;
+    int players;
+    bool wait;
     vector<Client> clients;
-    vector<Controller> games;
+    vector<Controller*> games;
     vector<int> codes;
     int runningGames;
+    thread thds[100];
+
+    ~Server();
 
     void SetUpServer();
     void ListenForNewClients();

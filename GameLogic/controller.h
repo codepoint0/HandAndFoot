@@ -34,10 +34,29 @@ struct Client{
 
 class Controller{
     private:
-        BoardState* b;
+        
 
     public:
-        Controller(int teams);
+        BoardState* b;
+        int code;
+        char* message;
+        char buffer[4096];
+        int new_socket;
+        int valread;
+        int server_fd;
+        struct sockaddr_in address; 
+        int opt = 1; 
+        int addrlen = sizeof(address);
+        int rc;
+        int ThreadID = 0;
+        vector<Client> clients;
+        int players;
+        bool wait;
+        vector<std::string> usernames;
+        vector<int> controlled;
+
+        Controller(int teams, int code, Client c);
+        Controller(const Controller& ctr);
         ~Controller();
 
         // Determines the entire game.

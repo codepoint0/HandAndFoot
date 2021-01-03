@@ -5,19 +5,23 @@
 
 int main(int argc, char const *argv[])
 {
-    SetUpServer();
+    
+    Server s;
+    s.SetUpServer();
 
-    runningGames = 0;
+    s.runningGames = 0;
     while (true)
     {
     }
 }
 
-int Server::SetUpServer(){
-    ThreadID = 0;
-    wait = true;
-    players = 10000000;
+Server::~Server(){
+    for(int i = 0; i < games.size(); i++){
+        delete games[i];
+    }
+}
 
+void Server::SetUpServer(){
     buffer[4096] = {0}; 
 
     // Creating socket file descriptor 
@@ -46,10 +50,10 @@ int Server::SetUpServer(){
         exit(EXIT_FAILURE); 
     }
     ListenForNewClients();
-    return 0;
 }
 
 void Server::ListenForNewClients(){
+    srand(time(NULL));
     while(true){
         Client c;
         if (listen(server_fd, 3) < 0) 
@@ -64,33 +68,41 @@ void Server::ListenForNewClients(){
             exit(EXIT_FAILURE); 
         } 
 
+        std::cout << "Waiting" << std::endl;
         valread = read(c.socket, buffer, sizeof(buffer)); 
         std::stringstream input(buffer);
         int t;
         input >> t;
+        std::cout << t << std::endl;
 
         if(t == 4 || t == 6 || t == 8){
             int code = (rand() % 9000) + 1000;
-            while(codes.find(code) != codes.end()){
+            while(find(codes.begin(), codes.end(), code) != codes.end()){
                code = (rand() % 10000) + 999;
             }
             codes.push_back(code); 
+            std::cout << code << std::endl;
             runningGames++;
-            Controller ctr(t/2, code, c);
-            send(c.socket , code.str() , strlen(code.c_str()) , 0 );
+            std::string codeString = "CO:" + to_string(code);
+            Controller* ctr = new Controller(t/2, code, c);
+            send(c.socket , codeString.c_str(), strlen(codeString.c_str()), 0 );
             games.push_back(ctr);
         }
         else {
+            std::cout << "Else" << std::endl;
             for(int i = 0; i < games.size(); i++){
-                if(games[i].code == t){
-                    games[i].AcceptNewClient(c);
-                    std::string conf = "conf";
-                    send(c.socket , conf , strlen(conf.c_str()) , 0 );
-                    if(games[i].b->teams*2 == games[i].clients.size()){
-                        std::thread s = std::thread(&Controller::play, games[i]);
+                if(games[i]->code == t){
+                    games[i]->AcceptNewClient(c);
+                    std::string conf = "CO:" + to_string(games[i]->code);
+                    send(c.socket , conf.c_str(), strlen(conf.c_str()) , 0 );
+                    if(games[i]->b->teams*2 == games[i]->clients.size()){
+                        thread s = std::thread(&Controller::play, games[i]);
+                        s.detach();
+                        std::cout << "abc" << std::endl;
                     }
                 }
             }
         }
+        std::fill_n(buffer, 4096, 0);
     }
 }
