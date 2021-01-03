@@ -20,8 +20,6 @@ public class Welcome {
 	protected static JPanel panel;
 	protected static JButton join;
 	protected static JButton create;
-	protected static JTextField ip;
-	protected static JTextField port;
 	protected static JTextField players;
 	protected static JTextField username;
 	protected static JButton connect;
@@ -69,60 +67,12 @@ public class Welcome {
 
 			public void mouseClicked(MouseEvent me) {
 				Clicked = 1;
-				create.setLocation(570, 320);
-				ip = new JTextField();
-				ip.setText("192.168.1.47");
-				ip.setSize(130, 30);
-				ip.setLocation(570, 160);
-				ip.addMouseListener(new MouseListener() {
-					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseReleased(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseEntered(MouseEvent me) {
-					}
-
-					public void mouseExited(MouseEvent me) {
-					}
-
-					public void mouseClicked(MouseEvent me) {
-						ip.setText("");
-					}
-				});
-				panel.add(ip);
-				port = new JTextField();
-				port.setText("8080");
-				port.setSize(130, 30);
-				port.setLocation(570, 200);
-				port.addMouseListener(new MouseListener() {
-					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseReleased(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseEntered(MouseEvent me) {
-					}
-
-					public void mouseExited(MouseEvent me) {
-					}
-
-					public void mouseClicked(MouseEvent me) {
-						port.setText("");
-					}
-				});
-				panel.add(port);
+				create.setLocation(570, 240);
 
 				username = new JTextField();
 				username.setText("username");
 				username.setSize(130, 30);
-				username.setLocation(570, 240);
+				username.setLocation(570, 160);
 				username.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -147,7 +97,7 @@ public class Welcome {
 				code = new JTextField();
 				code.setText("CODE");
 				code.setSize(130, 30);
-				code.setLocation(570, 280);
+				code.setLocation(570, 200);
 				code.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -192,58 +142,12 @@ public class Welcome {
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				ip = new JTextField();
-				ip.setText("192.168.1.47");
-				ip.setSize(130, 30);
-				ip.setLocation(570, 200);
-				ip.addMouseListener(new MouseListener() {
-					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseReleased(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseEntered(MouseEvent me) {
-					}
-
-					public void mouseExited(MouseEvent me) {
-					}
-
-					public void mouseClicked(MouseEvent me) {
-						ip.setText("");
-					}
-				});
-				panel.add(ip);
-				port = new JTextField();
-				port.setText("8080");
-				port.setSize(130, 30);
-				port.setLocation(570, 240);
-				port.addMouseListener(new MouseListener() {
-					public void mousePressed(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseReleased(MouseEvent me) {
-						if (me.getButton() == MouseEvent.BUTTON1) {}
-					}
-
-					public void mouseEntered(MouseEvent me) {
-					}
-
-					public void mouseExited(MouseEvent me) {
-					}
-
-					public void mouseClicked(MouseEvent me) {
-						port.setText("");
-					}
-				});
+				
 				panel.add(port);
 				players = new JTextField();
 				players.setText("4");
 				players.setSize(130, 30);
-				players.setLocation(570, 280);
+				players.setLocation(570, 200);
 				players.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -267,7 +171,7 @@ public class Welcome {
 				username = new JTextField();
 				username.setText("username");
 				username.setSize(130, 30);
-				username.setLocation(570, 320);
+				username.setLocation(570, 240);
 				username.addMouseListener(new MouseListener() {
 					public void mousePressed(MouseEvent me) {
 						if (me.getButton() == MouseEvent.BUTTON1) {}
@@ -364,8 +268,8 @@ public class Welcome {
 	public void Jumpship() {
 		Data.logger.info("Moving from Welcome Window to Lobby");
 		frame.setVisible(false);
-		Data.ip = ip.getText();
-		Data.port = port.getText();
+		Data.ip = "52.13.12.123";
+		Data.port = "8080";
 		Data.Resolution = Integer.parseInt(resolution.getText());
 		Data.logger.finer("Connecting to ip " + Data.ip + " on port " + Data.port);
 		if(Clicked == 0) {
@@ -376,8 +280,8 @@ public class Welcome {
 		}
 		Data.username = username.getText();
 		System.out.println(Data.username);
-		String serverName = ip.getText();
-		int port = Integer.parseInt(this.port.getText());
+		String serverName = "52.13.12.123";
+		int port = 8080;
 		try {
 			Data.logger.info("Establishing connection");
 			Socket client = new Socket(serverName, port);
