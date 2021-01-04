@@ -39,8 +39,3 @@ See The WIKI
 ### January 3rd, 2021
 + Finished up work on Room Codes
 + started work on Server protection (don't crash if running into a problem)
-
-## Possible fixes
-+ Player needs to be able to say where wilds are played (will need to know about team)
-+ Meld score, dirty/clean bonus can be a setting that is changed
-+ If > 0 wilds && valid  dirty == true
