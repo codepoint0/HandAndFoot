@@ -6,9 +6,9 @@
     This file is the messanger between the outside world and the game.
 
     Created by: Joshua Speckman and Tyler Gordon
-    Date: December 15, 2020
-    Modified: December 17, 2020
-    File: controller.h
+    Date: December 28, 2020
+    Modified: January 3, 2021
+    File: server.h
 */
 
 #include <sstream>
@@ -29,11 +29,6 @@
 
 #include "controller.h"
 
-struct CtrCodePair{
-    int index;
-    int code;
-};
-
 class Server{
     private:
     public:
@@ -45,9 +40,6 @@ class Server{
     int opt = 1; 
     int addrlen = sizeof(address);
     int rc;
-    int ThreadID = 0;
-    int players;
-    bool wait;
     vector<Client> clients;
     vector<Controller*> games;
     vector<int> codes;
@@ -55,12 +47,30 @@ class Server{
     thread thds[100];
     bool exists[100];
     
-
+    /*
+        Clean up all the lose threads
+    */
     ~Server();
 
+    /*
+        Set up the listeners on a given port and prepare to
+        multithread.
+    */
     void SetUpServer();
+
+    /*
+        Constantly listen for new clients, once a client
+        connects determine if the user is trying to create
+        a new game or join a game and then direct the client
+        accordingly. 
+    */
     void ListenForNewClients();
-    void CloseConnections();
+
+    /*
+        Close any and all threads which have died in their
+        process
+    */
+    void CloseThreads();
 };
 
 #endif

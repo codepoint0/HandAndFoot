@@ -7,7 +7,7 @@
 
     Created by: Joshua Speckman and Tyler Gordon
     Date: December 15, 2020
-    Modified: December 17, 2020
+    Modified: January 3, 2021
     File: controller.h
 */
 
@@ -28,21 +28,28 @@
 
 #include "game.h"
 
+/*
+    A struct to keep track of all client information
+*/
 struct Client{
     int socket;
 };
 
 struct DeadThreadException : public std::exception{
     const char * what() const throw(){
-        return "";
+        return "Thread has died while processing, did someone disconnect?";
     }
 };
 
+/*
+    The part of the server which dictates the game to each player.
+    The work done here is done in play.
+*/
 class Controller{
     private:
-        
-
     public:
+
+        // The current game's board
         BoardState* b;
         int code;
         char* message;
@@ -65,17 +72,52 @@ class Controller{
         Controller(const Controller& ctr);
         ~Controller();
 
-        // Determines the entire game.
+        /*
+            Starts the game and figures out teams, then starts by
+            sending the player's their hands, groups, foots ect.
+            Each time through the play loop a new player starts playing.
+            Directs the entire game.
+        */
         void play();
+
+        /* 
+            Read from client i
+        */
         std::string Read(int i);
-        void CountDown(int threadid);
+
+        /*
+            Send PlayerID the message
+        */
         void SendPlayerInfo(int PlayerId, std::string message);
         vector<int> Pairing(vector<int> selected);
+
+        /*
+            Takes the player hand and translates it into the protocol
+            to be able to send it to the client.
+        */
         std::string StringHand(int playerID, vector<Player*> turn);
+
+        /*
+            Takes the player groups and translates it into the protocol
+            to be able to send it to the client.
+        */
         std::string StringGroup(int PlayerID, vector<Player*> turn);
+
+        /*
+            Used to determine teams
+        */
         vector<int> TurnOrder(vector<int> correctPairs);
+
+        /*
+            Before teams are determined use this to send information
+            to players and to read from players.
+        */
         void PreSendPlayerInfo(int playerID, std::string message);
         std::string PreRead(int i);
+
+        /*
+            Used to determine teams
+        */
         vector<vector<int>> enumeratedPairings(int k);
         int score(vector<int> pairs, vector<int> selected);
         void AcceptNewClient(Client c);

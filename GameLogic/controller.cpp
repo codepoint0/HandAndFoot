@@ -49,27 +49,28 @@ Controller::~Controller(){
     delete b;
 }
 
-
-// THIS WILL HAVE TO BE MODIFIED FOR SERVER/CLIENT COMMUNICATIONS
 void Controller::play(){
     try{
         std::fill_n(buffer, 4096, 0);
+
+        // Clear the buffers
         for(int i = 0; i < players; i++){
             PreRead(i);
         }
 
         std::string input;
         vector<std::string> joinOrder;
+
+        // Get the usernames from the users
         for(int i = 0; i < players; i++){
             std::string username;
             PreSendPlayerInfo(i, "GU:" + to_string(i) + " " + to_string(players));
             username = PreRead(i);
             joinOrder.push_back(username);
         }
-        for(int i = 0; i < joinOrder.size(); i++){
-            std::cout << "JOIN ORDER: " << joinOrder[i] << std::endl;
-        }
 
+        // Send the usernames to the clients and then wait for the original user
+        // to signal start game
         for(int i = 0; i < players; i++){
             for(int j = 0; j < players; j++){
                 PreSendPlayerInfo(i, "US:" + to_string(j) + " " + joinOrder[j]);
@@ -78,8 +79,9 @@ void Controller::play(){
             PreSendPlayerInfo(i, "LB:");
             PreRead(i);
         }
-
         PreRead(0);
+
+        // Get selected teams and do pairing algorithm
         vector<int> selected;
         vector<int> correctPairs;
         for(int i = 0; i < players; i++){
@@ -87,24 +89,16 @@ void Controller::play(){
             input = PreRead(i);
             selected.push_back(std::stoi(input));
         }
-
         correctPairs = Pairing(selected);
         controlled = TurnOrder(correctPairs);
 
+        // Start game to all players
         for(int i = 0; i < players; i++){
             SendPlayerInfo(i, "SG:" + to_string(i) + " " + to_string(players));
             input = Read(i);
-            std::cout << input << std::endl;
             usernames.push_back(input);
             input = "";
         }
-        
-
-        for(int i = 0; i < players; i++){
-            std::cout << usernames[i] << " " << std::endl;
-        }
-
-        
 
         // Gets a vector of all of the players in their turn order
         // (players on the same team sit across from each other)
@@ -113,6 +107,9 @@ void Controller::play(){
             turn[i] = b->t[i]->p1;
             turn[i+b->teams] = b->t[i]->p2;
         }
+
+        // Send all players their top card of their hand and their foot and allow them to determine
+        // if they want to swap hand and foot. Sleep for 20 seconds while we wait for them to decide.
         for(int i = 0; i < turn.size()/2; i++){
             SendPlayerInfo(i, "LC:" + to_string(b->t[i]->p1->hand->cards[0].suit) + " " + to_string(b->t[i]->p1->hand->cards[0].value));
             Read(i);
@@ -134,6 +131,7 @@ void Controller::play(){
 
         sleep(20);
 
+        // Based on their decision either swap or continue
         for(int i = 0; i < turn.size()/2; i++){
             SendPlayerInfo(i, "SL:");
             std::string choice = Read(i);
@@ -147,19 +145,24 @@ void Controller::play(){
             }
         }
 
+        // Set up score board and send the information to the player
         for(int i = 0; i < turn.size(); i++){
-
             std::stringstream scores;
             for(int j = 0; j < b->t.size(); j++){
                 SendPlayerInfo(i, "SB:" + to_string(j) + " " + usernames[j][0] + "" + usernames[j+b->teams][0] + " " + "0");
                 Read(i);
             }  
         }
+
+        // Send player's their information, hand, groups, top card ect.
         for(int i = 0; i < turn.size(); i++){
+
+            // First player needs to know it is their turn first
             if(i == 0){
                 SendPlayerInfo(i, "PS:1");
                 Read(i);
             }
+
             // Try to look at the top card on the pile (if not it is okay and not an error)
             try{
                 Card c = b->b->pilePeek();
@@ -263,6 +266,9 @@ void Controller::play(){
             SendPlayerInfo(currentTurn, hand);
             Read(currentTurn);
             SendPlayerInfo(currentTurn, "~");
+
+            // First choice, player needs to decide if they want to draw
+            // or pick up the pile
             std::string PorD = Read(currentTurn);
             std::cout << PorD << std::endl;
             if(PorD[0] == 'D'){
@@ -277,6 +283,7 @@ void Controller::play(){
             Read(currentTurn);
 
             for(int i = 0; i < players; i++){
+
                 // Try to look at the top card on the pile (if not it is okay and not an error)
                 try{
                     Card c = b->b->pilePeek();
@@ -300,8 +307,10 @@ void Controller::play(){
                 Read(i);
             }
 
+            // Phase 2, player can play new groups
             SendPlayerInfo(currentTurn, "PS:2");
             Read(currentTurn);
+
             // Display the players hand
             hand = StringHand(currentTurn, turn);
             SendPlayerInfo(currentTurn, hand);
@@ -310,9 +319,10 @@ void Controller::play(){
             SendPlayerInfo(currentTurn, "RD:");
             Read(currentTurn);
 
+            // Second choice, either move on, or player can
+            // play groups
             input = "";
             input = Read(currentTurn);
-            std::cout << input << std::endl;
             while(input[0] != 'M'){
                 // In order to lay cards down the input will come
                 // in as:
@@ -366,8 +376,12 @@ void Controller::play(){
                     throw e;
                 }
                 try{
+
+                    // try to play the groups
                     turn[currentTurn]->play(c);
                     hand = StringHand(currentTurn, turn);
+
+                    // Send the player and the player's partner the groups as their own
                     std::string groups = StringGroup(currentTurn, turn);
                     SendPlayerInfo(currentTurn, hand);
                     Read(currentTurn);
@@ -376,6 +390,9 @@ void Controller::play(){
                     std::string groupsPartner = StringGroup((currentTurn+turn.size()/2)%turn.size(), turn);
                     SendPlayerInfo((currentTurn+turn.size()/2)%turn.size(), groupsPartner);
                     Read((currentTurn+turn.size()/2)%turn.size());
+
+                    // If we got to this point and the team has not melded yet then that
+                    // means that they now have
                     if(!turn[currentTurn]->team->meld){
                         turn[currentTurn]->team->meld = true;
                     }
@@ -384,13 +401,14 @@ void Controller::play(){
                     throw e;
                 }
                 catch(exception e){
+
+                    // Failed to play the groups so let the 
+                    // client so we can redraw
                     std::stringstream s;
                     s << "EE:" << e.what();
                     SendPlayerInfo(currentTurn, s.str());
                     Read(currentTurn);
                 }
-
-                
 
                 SendPlayerInfo(currentTurn, "PS:2");
                 Read(currentTurn);
@@ -400,6 +418,7 @@ void Controller::play(){
                 SendPlayerInfo((currentTurn+turn.size()/2)%turn.size(), "RD:");
                 Read((currentTurn+turn.size()/2)%turn.size());
 
+                // Players can choose if they wanna play again or move on
                 input = Read(currentTurn);
             }
             
@@ -419,9 +438,7 @@ void Controller::play(){
             std::stringstream ss1;
             input = Read(currentTurn);
             ss1 << input;
-            std::cout << input << std::endl;
             ss1 >> value >> suit >> deckID;
-            std::cout << value << " " << suit << " " << deckID << std::endl;
             if(value > 51){
                 Card test(true,value,suit,50,deckID);
                 turn[currentTurn]->discard(test);
@@ -441,8 +458,7 @@ void Controller::play(){
             // If the player lays down and discards their last card in their foot then they are done!
             if(turn[currentTurn]->inFoot && turn[currentTurn]->foot->cards.size() == 0){
                 
-                // Reset the board
-                
+                // Send the players the score board
                 for(int i = 0; i < turn.size(); i++){
                     std::stringstream scores;
                     for(int j = 0; j < b->t.size(); j++){
@@ -453,7 +469,10 @@ void Controller::play(){
                     }  
                 }
                 
+                // Reset the board
                 b->reset();
+
+                // Send the top cards of their hand and foot to allow for the choice again
                 for(int i = 0; i < turn.size()/2; i++){
                     SendPlayerInfo(i, "LC:" + to_string(b->t[i]->p1->hand->cards[0].suit) + " " + to_string(b->t[i]->p1->hand->cards[0].value));
                     Read(i);
@@ -475,6 +494,7 @@ void Controller::play(){
 
                 sleep(20);
 
+                // Swap hand and foot
                 for(int i = 0; i < turn.size()/2; i++){
                     SendPlayerInfo(i, "SL:");
                     std::string choice = Read(i);
@@ -488,7 +508,9 @@ void Controller::play(){
                     }
                 }
 
+                // Send all the information to the players
                 for(int i = 0; i < turn.size(); i++){
+
                     // Try to look at the top card on the pile (if not it is okay and not an error)
                     try{
                         Card c = b->b->pilePeek();
@@ -559,7 +581,6 @@ void Controller::play(){
                     if(b->scores[i] >= 10000){
                         done = true;
                         winningScore = b->scores[i];
-                        // Reset the board
                 
                         for(int i = 0; i < turn.size(); i++){
                             std::stringstream scores;
@@ -568,6 +589,8 @@ void Controller::play(){
                                 Read(i);
                             }  
                         }
+
+                        // We are done here, we can delete this
                         delete this;
                     }
                 }
@@ -576,6 +599,8 @@ void Controller::play(){
             SendPlayerInfo(currentTurn, "PS:0");
             Read(currentTurn);
 
+            // This is the end of the turn so send all players the information of
+            // what happened during the turn
             for(int i = 0; i < players; i++){
                 stringstream ss;
                 SendPlayerInfo(i, StringGroup(currentTurn, turn));
@@ -621,7 +646,6 @@ void Controller::play(){
                 Read(i);
                 SendPlayerInfo(i, "RD:");
                 Read(i);
-            // HAND COUNT, FOOT, TOP CARD OF PILE, PILE NUM
             }
 
             // Go to the next player's turn
@@ -632,13 +656,12 @@ void Controller::play(){
         }
     }
     catch(exception e){
-        std::cout << "CATCH" << std::endl;
         return;
     }
 }
 
 std::string Controller::StringHand(int PlayerID, vector<Player*> turn){
-        // Display the players hand
+    // PH:2 3 4,2 2 2,...
     Hand* handToDisplay;
     if(turn[PlayerID]->inFoot){
         handToDisplay = turn[PlayerID]->foot;
@@ -656,6 +679,7 @@ std::string Controller::StringHand(int PlayerID, vector<Player*> turn){
 }
 
 std::string Controller::StringGroup(int PlayerID, vector<Player*> turn){
+    //PG:1 1 1,1 2 2,1 1 2|4 1 2...
     std::stringstream m;
     m << "PG:" << PlayerID << " ";
     for(int i = 0; i < 11; i++){
@@ -668,7 +692,6 @@ std::string Controller::StringGroup(int PlayerID, vector<Player*> turn){
         }
         m << "|";
     }
-
     return m.str();
 }
 
@@ -694,8 +717,7 @@ vector<int> Controller::TurnOrder(vector<int> correctPairs){
 }
 
 
-vector<vector<int>> Controller::enumeratedPairings(int k)
-{
+vector<vector<int>> Controller::enumeratedPairings(int k){
     vector<vector<int>> toReturn;
     if (k == 0)
     {
@@ -829,7 +851,5 @@ std::string Controller::Read(int i){
 }
 
 void Controller::AcceptNewClient(Client c){
-
     clients.push_back(c);
-
 }
