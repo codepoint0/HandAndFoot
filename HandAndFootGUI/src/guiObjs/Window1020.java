@@ -1,33 +1,30 @@
 package guiObjs;
 
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GraphicsDevice;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Observable;
-import java.util.Observer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/***
+ * A 1020 by 570 game window.
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 public class Window1020 extends Window implements Runnable {
 
+	// A custom comparator to compare cards
 	CardOrganizer c = new CardOrganizer();
 
 	BufferedImage image;
 
-	// FRAMES
+	// JLABELS
 	protected static JFrame frame;
 	protected static JPanel panel;
 	float FrameSizeX;
@@ -64,12 +61,16 @@ public class Window1020 extends Window implements Runnable {
 	JButton[] groupButtons = new JButton[10];
 	ArrayList<JButton> playerButton = new ArrayList<JButton>();
 
+	// Valid piles
 	int[] ValidPlays = { 1, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+
+	// All picture and suit locations
 	String[][] pictureLocations = new String[4][13];
 	String[] suitLocations = { "res/images/" + Data.Resolution + "/Club.png",
 			"res/images/" + Data.Resolution + "/Heart.png", "res/images/" + Data.Resolution + "/Diamond.png",
 			"res/images/" + Data.Resolution + "/Spade.png" };
 
+	// ArrayLists to keep track of active labels
 	ArrayList<JLabel> currentCards;
 	ArrayList<JLabel> currentGroups;
 	ArrayList<JLabel> currentPile;
@@ -80,25 +81,32 @@ public class Window1020 extends Window implements Runnable {
 	ArrayList<JLabel> justDrewLabels;
 	ArrayList<JLabel> choiceLabelsLeft;
 	ArrayList<JLabel> choiceLabelsRight;
-	
 
+	/***
+	 * Constructor to create the window, calls custom constructor
+	 */
 	@Override
 	public void CreateWindow() {
 		Create1020Window();
 	}
 
+	/***
+	 * Creates the window, default images and buttons to go on the panel
+	 */
 	private void Create1020Window() {
 		panel = new JPanel();
 		panel.setLayout(null);
 		panel.setSize(1700, 950);
 		panel.setBackground(new Color(153, 221, 255));
-		
+
+		// Creates the labels for where the left and right card will sit
+		// when the player needs to select their hand
 		leftCard = new JLabel();
 		rightCard = new JLabel();
-		leftCard.setSize(51,72);
+		leftCard.setSize(51, 72);
 		leftCard.setLocation(156, 147);
 		panel.add(leftCard);
-		rightCard.setSize(51,72);
+		rightCard.setSize(51, 72);
 		rightCard.setLocation(813, 147);
 		panel.add(rightCard);
 
@@ -112,12 +120,11 @@ public class Window1020 extends Window implements Runnable {
 		justDrewLabels = new ArrayList<JLabel>();
 		choiceLabelsLeft = new ArrayList<JLabel>();
 		choiceLabelsRight = new ArrayList<JLabel>();
-		
 
+		// Create all the buttons for the panel
 		CreatePanelButtons();
-		
 
-
+		// Create the images for the panel
 		try {
 			Data.logger.finest("Creating Wreath");
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/Wreath.png"));
@@ -129,10 +136,6 @@ public class Window1020 extends Window implements Runnable {
 			Data.logger.warning("FAILED TO CREATE WREATH : " + ex.toString());
 			ex.printStackTrace();
 		}
-		
-
-		
-		
 
 		try {
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/LightGreen.png"));
@@ -215,7 +218,8 @@ public class Window1020 extends Window implements Runnable {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		
+
+		// Create the panel to display the card the player drew
 		justDrew = new JLabel();
 		justDrew.setSize(51, 82);
 		justDrew.setLocation(860, 312);
@@ -264,7 +268,8 @@ public class Window1020 extends Window implements Runnable {
 			ex.printStackTrace();
 		}
 
-		
+		// Go through and create player images and buttons based on the
+		// number of players
 		for (int i = 1; i < Data.players.size(); i++) {
 			if (Data.players.size() == 4) {
 				try {
@@ -283,7 +288,7 @@ public class Window1020 extends Window implements Runnable {
 					ex.printStackTrace();
 				}
 			}
-			
+
 			if (Data.players.size() == 6) {
 				try {
 					JLabel playerImage;
@@ -330,10 +335,10 @@ public class Window1020 extends Window implements Runnable {
 					ex.printStackTrace();
 				}
 			}
-
 		}
-		
-		for(int i = 0; i < 11; i++) {
+
+		// Create outlines for clean and dirty piles; sets the labels invisible
+		for (int i = 0; i < 11; i++) {
 			try {
 				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/CleanBook.png"));
 				JLabel clean = new JLabel(new ImageIcon(image));
@@ -345,7 +350,7 @@ public class Window1020 extends Window implements Runnable {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-			
+
 			try {
 				image = ImageIO.read(new File("res/images/" + Data.Resolution + "/DirtyBook.png"));
 				JLabel dirty = new JLabel(new ImageIcon(image));
@@ -357,9 +362,8 @@ public class Window1020 extends Window implements Runnable {
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
-			
 		}
-		
+
 		try {
 			image = ImageIO.read(new File("res/images/" + Data.Resolution + "/DiscardConfirm.png"));
 			discardConfirm = new JLabel(new ImageIcon(image));
@@ -377,10 +381,13 @@ public class Window1020 extends Window implements Runnable {
 			pictureLocations[2][i] = "res/images/" + Data.Resolution + "/Red" + (i + 1) + ".png";
 		}
 
+		// Creates area for score board
 		ScoreBoard = new JLabel();
 		ScoreBoard.setSize(180, 180);
 		ScoreBoard.setLocation(840, 0);
 		panel.add(ScoreBoard);
+
+		// Update the frame
 		ServerUpdate();
 
 		// frame Code
@@ -401,7 +408,7 @@ public class Window1020 extends Window implements Runnable {
 	 */
 	private void CreatePanelButtons() {
 		selectButtonLeft = new JButton();
-		selectButtonLeft.setSize(51,72);
+		selectButtonLeft.setSize(51, 72);
 		selectButtonLeft.setLocation(156, 147);
 		selectButtonLeft.setVisible(false);
 		selectButtonLeft.setOpaque(false);
@@ -436,9 +443,9 @@ public class Window1020 extends Window implements Runnable {
 			}
 		});
 		panel.add(selectButtonLeft);
-		
+
 		selectButtonRight = new JButton();
-		selectButtonRight.setSize(51,72);
+		selectButtonRight.setSize(51, 72);
 		selectButtonRight.setLocation(813, 147);
 		selectButtonRight.setVisible(false);
 		selectButtonRight.setOpaque(false);
@@ -517,7 +524,7 @@ public class Window1020 extends Window implements Runnable {
 				if (Data.phase == 1) {
 					draw.setEnabled(false);
 					draw.setVisible(false);
-					Data.th.SendMessage("D");
+					Data.coms.SendMessage("D");
 					justDrew.setVisible(true);
 				}
 			}
@@ -555,7 +562,7 @@ public class Window1020 extends Window implements Runnable {
 					discardBorder.setVisible(true);
 					Data.IsQueued = false;
 					Data.discardQueued = false;
-					Data.th.SendMessage("M");
+					Data.coms.SendMessage("M");
 				} else if (Data.phase == 4 && Data.discardQueued) {
 					Data.discardQueued = false;
 					Data.QueuedIndex = -1;
@@ -564,7 +571,7 @@ public class Window1020 extends Window implements Runnable {
 					discardBorder.setVisible(false);
 					play.setEnabled(true);
 					discard.setEnabled(false);
-					Data.th.SendMessage(
+					Data.coms.SendMessage(
 							Data.pile.get(Data.pile.size() - 1).value + " " + Data.pile.get(Data.pile.size() - 1).suit
 									+ " " + Data.pile.get(Data.pile.size() - 1).deckID);
 				}
@@ -593,7 +600,7 @@ public class Window1020 extends Window implements Runnable {
 		submit.addMouseListener(new MouseListener() {
 			public void mousePressed(MouseEvent me) {
 				if (Data.phase == 3) {
-					Data.th.SendMessage(Pipe());
+					Data.coms.SendMessage(Pipe());
 					play.setEnabled(true);
 					discard.setEnabled(true);
 					play.setVisible(true);
@@ -692,9 +699,9 @@ public class Window1020 extends Window implements Runnable {
 
 			}
 		});
-
 		panel.add(pile);
 
+		// Creates buttons based on the number of players
 		for (int i = 1; i < Data.players.size(); i++) {
 			if (Data.players.size() == 4) {
 				JButton playerButton = new JButton();
@@ -819,9 +826,7 @@ public class Window1020 extends Window implements Runnable {
 				currentPlayers.add(username);
 				panel.add(playerButton);
 				panel.add(username);
-			}
-
-			else if (Data.players.size() == 8) {
+			} else if (Data.players.size() == 8) {
 				JButton playerButton = new JButton();
 				playerButton.setName("" + i);
 				JLabel username = new JLabel();
@@ -891,10 +896,8 @@ public class Window1020 extends Window implements Runnable {
 				panel.add(playerButton);
 				panel.add(username);
 			}
-
 		}
 
-		// panelButtons
 		back = new JButton();
 		back.setName("Back");
 		back.setSize(90, 20);
@@ -924,7 +927,7 @@ public class Window1020 extends Window implements Runnable {
 		});
 		panel.add(back);
 
-		// panelButtons
+		// Button on the left for when user is picking their hand
 		JButton leftButton = new JButton();
 		leftButton.setName("Left");
 		leftButton.setSize(60, 126);
@@ -1045,6 +1048,7 @@ public class Window1020 extends Window implements Runnable {
 		panelButtons[11] = rightButton;
 		panel.add(rightButton);
 
+		// Buttons for all of the groups the user can play on
 		for (int i = 0; i < 11; i++) {
 			JButton groupButton = new JButton();
 			groupButton.setName("" + i);
@@ -1086,10 +1090,19 @@ public class Window1020 extends Window implements Runnable {
 		}
 	}
 
+	/***
+	 * Turns the groups into piped format
+	 * 
+	 * @return a string version of the groups into pipes
+	 */
 	public String Pipe() {
 		String ret = "";
+
+		// For each group
 		for (int i = 0; i < 11; i++) {
 			ArrayList<Card> l = Data.plannedGroups.get(i);
+
+			// For each card in the group
 			for (int j = 0; j < l.size(); j++) {
 				Card c = l.get(j);
 				ret += c.value + " " + c.suit + " " + c.deckID;
@@ -1102,14 +1115,21 @@ public class Window1020 extends Window implements Runnable {
 		return ret;
 	}
 
+	/***
+	 * Whenever the GUI needs to have a graphical update as determined by the server
+	 */
 	@Override
 	public void ServerUpdate() {
 		Data.logger.info("Been instructed to redraw the screen");
+
+		// update each of the subcategories
 		DrawHand();
 		DrawPile();
 		DrawGroups();
 		DrawPlayers();
 		DrawScoreBoard();
+
+		// hide/display buttons based on phase
 		if (Data.phase == 0) {
 			draw.setEnabled(false);
 			draw.setVisible(false);
@@ -1173,7 +1193,7 @@ public class Window1020 extends Window implements Runnable {
 			discard.setEnabled(true);
 			discard.setVisible(true);
 		}
-		if(Data.phase == 6) {
+		if (Data.phase == 6) {
 			draw.setEnabled(false);
 			draw.setVisible(false);
 			submit.setEnabled(false);
@@ -1190,7 +1210,7 @@ public class Window1020 extends Window implements Runnable {
 			selectButtonRight.setEnabled(true);
 			DrawChoice();
 		}
-		if(Data.endGame) {
+		if (Data.endGame) {
 			panel.setVisible(false);
 			JPanel finalPanel = new JPanel();
 			finalPanel.setLayout(null);
@@ -1207,19 +1227,24 @@ public class Window1020 extends Window implements Runnable {
 	 * Draws the hand at the bottom of the screen
 	 */
 	public void DrawHand() {
+
+		// Remove the known labels
 		for (JLabel j : currentCards) {
 			cardPanel.remove(j);
 		}
+
+		// Set the foot icon
 		if (!Data.players.get(Data.userID).foot) {
 			foot.setVisible(false);
 		}
 		currentCards.clear();
 
 		Data.hand.sort(c);
-		
-		if(Data.drewCard) {
+
+		// If the player drew a card display the card
+		if (Data.drewCard) {
 			justDrew.setVisible(true);
-			for(JLabel j : justDrewLabels) {
+			for (JLabel j : justDrewLabels) {
 				justDrew.remove(j);
 			}
 			justDrewLabels.clear();
@@ -1228,18 +1253,16 @@ public class Window1020 extends Window implements Runnable {
 			justDrewTitle.setSize(50, 10);
 			justDrewTitle.setLocation(0, 0);
 			justDrew.add(justDrewTitle);
-			if(Data.drew.value != 52 && Data.drew.value != 53) {
-				CreateNumberForCard(0, 10, Data.drew.suit, Data.drew.value-1, justDrewLabels, justDrew, false);
+			if (Data.drew.value != 52 && Data.drew.value != 53) {
+				CreateNumberForCard(0, 10, Data.drew.suit, Data.drew.value - 1, justDrewLabels, justDrew, false);
 				CreateSuitForCard(0, 46, Data.drew.suit, justDrewLabels, justDrew);
-			}
-			else {
+			} else {
 				if (Data.drew.value == 52) {
 					CreateNumberForCard(0, 36, 52, -1, justDrewLabels, justDrew, true);
 				} else {
 					CreateNumberForCard(0, 36, 53, -1, justDrewLabels, justDrew, true);
 				}
 			}
-			
 			CreateCardStock(0, 10, justDrewLabels, justDrew);
 		}
 
@@ -1253,6 +1276,7 @@ public class Window1020 extends Window implements Runnable {
 			draw.setVisible(false);
 		}
 
+		// Draw all of the cards in the player's hand
 		for (int i = Data.handIndex; i < Math.min(Data.handIndex + 10, Data.hand.size()); i++) {
 			if (Data.hand.get(i).suit != -1) {
 				CreateNumberForCard(27 + (90 * (i - Data.handIndex)), 18, Data.hand.get(i).suit,
@@ -1272,6 +1296,8 @@ public class Window1020 extends Window implements Runnable {
 	 * Draws the top card of the pile in the center of the wreath
 	 */
 	public void DrawPile() {
+
+		// Remove all known labels
 		for (JLabel j : currentPile) {
 			discardPile.remove(j);
 		}
@@ -1282,8 +1308,9 @@ public class Window1020 extends Window implements Runnable {
 		lightRed.setVisible(false);
 		darkRed.setVisible(false);
 		currentPile.clear();
-		if (Data.pileNumber > 0) {
 
+		// Draw the indicator around the wreath based on the number of cards in the pile
+		if (Data.pileNumber > 0) {
 			if (Data.pileNumber > 0 && Data.pileNumber < 4) {
 				lightGreen.setVisible(true);
 			} else if (Data.pileNumber > 3 && Data.pileNumber < 8) {
@@ -1317,10 +1344,14 @@ public class Window1020 extends Window implements Runnable {
 	 * Draws all the groups the player (and teammate) have played
 	 */
 	public void DrawGroups() {
+
+		// Remove all the known labels
 		for (JLabel j : currentGroups) {
 			groupPanel.remove(j);
 		}
 		currentGroups.clear();
+
+		// If the phase is 5 draw the groups according to the player
 		if (Data.phase == 5) {
 			Player p = Data.players.get((Data.userID + Data.selectedPlayer) % Data.players.size());
 			for (int i = 0; i < 11; i++) {
@@ -1334,18 +1365,16 @@ public class Window1020 extends Window implements Runnable {
 					JLabel groupCount = new JLabel();
 					if (Data.DirtyBook(p.groups.get(i))) {
 						groupCount.setForeground(Color.black);
-						if(p.groups.get(i).size() > 6) {
+						if (p.groups.get(i).size() > 6) {
 							dirtyBooks.get(i).setVisible(true);
-						}
-						else {
+						} else {
 							dirtyBooks.get(i).setVisible(false);
 						}
 					} else {
 						groupCount.setForeground(Color.red);
-						if(p.groups.get(i).size() > 6) {
+						if (p.groups.get(i).size() > 6) {
 							cleanBooks.get(i).setVisible(true);
-						}
-						else {
+						} else {
 							cleanBooks.get(i).setVisible(false);
 						}
 					}
@@ -1373,7 +1402,10 @@ public class Window1020 extends Window implements Runnable {
 				}
 			}
 
-		} else {
+		}
+
+		// Display the player's groups
+		else {
 			for (int i = 0; i < 11; i++) {
 				Data.playedGroups.get(i).sort(c);
 			}
@@ -1385,16 +1417,16 @@ public class Window1020 extends Window implements Runnable {
 				cleanBooks.get(i).setVisible(false);
 				if (Data.DirtyBook(Data.plannedGroups.get(i)) || Data.DirtyBook(Data.playedGroups.get(i))) {
 					groupCount.setForeground(Color.black);
-					if(Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
+					if (Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
 						dirtyBooks.get(i).setVisible(true);
 					}
 				} else {
 					groupCount.setForeground(Color.red);
-					if(Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
+					if (Data.plannedGroups.get(i).size() + Data.playedGroups.get(i).size() > 6) {
 						cleanBooks.get(i).setVisible(true);
 					}
 				}
-				
+
 				groupCount.setText("" + combined);
 				groupCount.setSize(15, 15);
 				groupCount.setLocation(26 + (63 * i), 84);
@@ -1402,6 +1434,8 @@ public class Window1020 extends Window implements Runnable {
 				groupPanel.add(groupCount);
 				int n = Data.plannedGroups.get(i).size();
 				int m = Data.playedGroups.get(i).size();
+
+				// Draw the planned and the played groups
 				if (n > 0) {
 					if (Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1).value < 51) {
 						CreateNumberForCard(10 + (63 * i), 6,
@@ -1440,7 +1474,6 @@ public class Window1020 extends Window implements Runnable {
 							CreateCardStock(6 + (63 * i), 12, currentGroups, groupPanel);
 						}
 					}
-
 				}
 			}
 		}
@@ -1450,10 +1483,14 @@ public class Window1020 extends Window implements Runnable {
 	 * Draws all players on the screen
 	 */
 	public void DrawPlayers() {
+
+		// Remove the known jlabels
 		for (JLabel j : currentPlayers) {
 			panel.remove(j);
 		}
 		currentPlayers.clear();
+
+		// Draw the players based on the number of players in the game
 		for (int i = 1; i < Data.players.size(); i++) {
 			if (Data.players.size() == 4) {
 				JLabel currentTurnFrame = new JLabel();
@@ -1464,13 +1501,13 @@ public class Window1020 extends Window implements Runnable {
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
-				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+				if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 1) {
 					currentTurnFrame.setLocation(15, 147);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 2) {
 					currentTurnFrame.setLocation(486, 0);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 3) {
 					currentTurnFrame.setLocation(957, 147);
-				}				
+				}
 				currentPlayers.add(currentTurnFrame);
 				panel.add(currentTurnFrame);
 				JLabel username = new JLabel();
@@ -1528,17 +1565,17 @@ public class Window1020 extends Window implements Runnable {
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
-				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+				if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 1) {
 					currentTurnFrame.setLocation(15, 207);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 2) {
 					currentTurnFrame.setLocation(15, 87);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 3) {
 					currentTurnFrame.setLocation(486, 0);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 4) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 4) {
 					currentTurnFrame.setLocation(957, 87);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 5) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 5) {
 					currentTurnFrame.setLocation(957, 207);
-				}		
+				}
 				currentPlayers.add(currentTurnFrame);
 				panel.add(currentTurnFrame);
 				JLabel username = new JLabel();
@@ -1608,21 +1645,21 @@ public class Window1020 extends Window implements Runnable {
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
-				if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 1) {
+				if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 1) {
 					currentTurnFrame.setLocation(15, 207);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 2) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 2) {
 					currentTurnFrame.setLocation(15, 87);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 3) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 3) {
 					currentTurnFrame.setLocation(15, 0);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 4) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 4) {
 					currentTurnFrame.setLocation(486, 0);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 5) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 5) {
 					currentTurnFrame.setLocation(957, 0);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 6) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 6) {
 					currentTurnFrame.setLocation(957, 87);
-				} else if ((Data.CurrentTurn-Data.userID+Data.players.size())%Data.players.size() == 7) {
+				} else if ((Data.CurrentTurn - Data.userID + Data.players.size()) % Data.players.size() == 7) {
 					currentTurnFrame.setLocation(957, 207);
-				}	
+				}
 				currentPlayers.add(currentTurnFrame);
 				panel.add(currentTurnFrame);
 				JLabel username = new JLabel();
@@ -1694,13 +1731,16 @@ public class Window1020 extends Window implements Runnable {
 				}
 				panel.add(cardCount);
 				currentPlayers.add(cardCount);
-
 			}
-
 		}
 	}
 
+	/***
+	 * Draw a score board on the right side of the screen
+	 */
 	public void DrawScoreBoard() {
+
+		// Remove the known jlabels
 		for (JLabel j : currentScores) {
 			ScoreBoard.remove(j);
 		}
@@ -1711,6 +1751,8 @@ public class Window1020 extends Window implements Runnable {
 		title.setText("Scores");
 		currentScores.add(title);
 		ScoreBoard.add(title);
+
+		// For each of the teams draw their scores
 		for (int i = 0; i < Data.scores.size(); i++) {
 			JLabel score = new JLabel();
 			score.setText(Data.teamNames.get(i) + ":" + Data.scores.get(i));
@@ -1719,9 +1761,12 @@ public class Window1020 extends Window implements Runnable {
 			currentScores.add(score);
 			ScoreBoard.add(score);
 		}
-
 	}
-	
+
+	/***
+	 * Draws the buttons and cards for the user to decide which one is their hand
+	 * and which one is their foot.
+	 */
 	public void DrawChoice() {
 		for (JLabel j : choiceLabelsLeft) {
 			leftCard.remove(j);
@@ -1733,32 +1778,28 @@ public class Window1020 extends Window implements Runnable {
 		choiceLabelsRight.clear();
 		leftCard.setVisible(true);
 		rightCard.setVisible(true);
-		if(Data.left.suit != -1) {
+		if (Data.left.suit != -1) {
 			CreateNumberForCard(0, 0, Data.left.suit, Data.left.value - 1, choiceLabelsLeft, leftCard, false);
 			CreateSuitForCard(0, 36, Data.left.suit, choiceLabelsLeft, leftCard);
 			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
-		}
-		else if (Data.left.value == 52) {
+		} else if (Data.left.value == 52) {
 			CreateNumberForCard(4, 18, 52, -1, choiceLabelsLeft, leftCard, true);
 			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
-		} 
-		else {
+		} else {
 			CreateNumberForCard(4, 18, 53, -1, choiceLabelsLeft, leftCard, true);
 			CreateCardStock(0, 0, choiceLabelsLeft, leftCard);
 		}
-		if(Data.right.suit != -1) {
+		if (Data.right.suit != -1) {
 			CreateNumberForCard(0, 0, Data.right.suit, Data.right.value - 1, choiceLabelsRight, rightCard, false);
 			CreateSuitForCard(0, 36, Data.right.suit, choiceLabelsRight, rightCard);
 			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
-		}
-		else if (Data.right.value == 52) {
+		} else if (Data.right.value == 52) {
 			CreateNumberForCard(4, 18, 52, -1, choiceLabelsRight, rightCard, true);
 			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
-		} 
-		else {
+		} else {
 			CreateNumberForCard(4, 18, 53, -1, choiceLabelsRight, rightCard, true);
 			CreateCardStock(0, 0, choiceLabelsRight, rightCard);
-		}		
+		}
 	}
 
 	/**
@@ -1857,12 +1898,22 @@ public class Window1020 extends Window implements Runnable {
 		}
 	}
 
+	/***
+	 * Action taken for when a card, i, is pressed
+	 * 
+	 * @param i the card that is pressed
+	 */
 	public void CardPress(int i) {
+
+		// If phase is 3 then queue the card for playing on piles
 		if (Data.phase == 3) {
 			Data.IsQueued = true;
 			Data.Queued = Data.hand.get(i + Data.handIndex - 1);
 			Data.QueuedIndex = i + Data.handIndex - 1;
-		} else if (Data.phase == 4) {
+		}
+
+		// If phase is 4 queue card for discard
+		else if (Data.phase == 4) {
 			if (Data.IsQueued) {
 				Data.Queued = Data.hand.get(i + Data.handIndex - 1);
 				Data.QueuedIndex = i + Data.handIndex - 1;
@@ -1874,7 +1925,14 @@ public class Window1020 extends Window implements Runnable {
 		}
 	}
 
+	/***
+	 * Action taken when a given group, i, is pressed
+	 * 
+	 * @param i the group which is pressed
+	 */
 	public void GroupPress(int i) {
+		
+		// If the phase is 3, playing, and a card is queued, put the card in the pile
 		if (Data.phase == 3 && Data.IsQueued) {
 			if (Data.Queued.value == ValidPlays[i] || Data.Queued.value == 2 || Data.Queued.value == 52
 					|| Data.Queued.value == 53) {
@@ -1891,7 +1949,10 @@ public class Window1020 extends Window implements Runnable {
 			}
 			Data.QueuedIndex = -1;
 			Data.IsQueued = false;
-		} else if (Data.phase == 3 && !Data.IsQueued) {
+		} 
+		
+		// If the phase is 3, playing, and a card is queued, take the card from the pile
+		else if (Data.phase == 3 && !Data.IsQueued) {
 			int n = Data.plannedGroups.get(i).size();
 			if (n > 0) {
 				Card c = new Card(Data.plannedGroups.get(i).get(Data.plannedGroups.get(i).size() - 1));
@@ -1904,9 +1965,14 @@ public class Window1020 extends Window implements Runnable {
 		}
 	}
 
+	/***
+	 * Action taken when the pile is pressed
+	 */
 	public void PilePress() {
+		
+		// If phase is 1 then pick up the pile
 		if (Data.phase == 1) {
-			Data.th.SendMessage("P");
+			Data.coms.SendMessage("P");
 		} else if (Data.phase == 4 && Data.IsQueued) {
 			if (Data.discardQueued) {
 				Data.hand.add(Data.pile.get(Data.pile.size() - 1));
@@ -1924,7 +1990,11 @@ public class Window1020 extends Window implements Runnable {
 			DrawHand();
 			DrawPile();
 			panel.repaint();
-		} else if (Data.phase == 4 && Data.discardQueued) {
+		} 
+		
+		// If phase is 4 and a discard is queued then discard the card
+		// and wait for confirmation
+		else if (Data.phase == 4 && Data.discardQueued) {
 			Data.hand.add(Data.pile.get(Data.pile.size() - 1));
 			Data.pile.remove(Data.pile.size() - 1);
 			Data.QueuedIndex = -1;
@@ -1938,7 +2008,12 @@ public class Window1020 extends Window implements Runnable {
 		}
 	}
 
+	/***
+	 * Action taken when cancel is pressed
+	 */
 	public void cancel() {
+		
+		// Put cards back into players hand
 		for (int i = 0; i < 11; i++) {
 			Data.hand.addAll(Data.plannedGroups.get(i));
 			Data.plannedGroups.get(i).clear();
@@ -1949,28 +2024,9 @@ public class Window1020 extends Window implements Runnable {
 		panel.repaint();
 	}
 
-	public static void resize(Component c, float scaleX, float scaleY) {
-		Point s = c.getLocation();
-		int x = c.getWidth();
-		int y = c.getHeight();
-		c.setLocation((int) scaleX * s.x, (int) scaleY * s.y);
-		c.setSize((int) scaleX * x, (int) scaleY * y);
-		if (c instanceof JLabel) {
-			if (((JLabel) c).getIcon() != null) {
-				Image img = ((ImageIcon) ((JLabel) c).getIcon()).getImage();
-				Image newImg = img.getScaledInstance(c.getWidth(), c.getHeight(), java.awt.Image.SCALE_SMOOTH);
-				((JLabel) c).setIcon(new ImageIcon(newImg));
-			}
-		}
-		if (c instanceof Container) {
-			Component[] b = ((Container) c).getComponents();
-			for (Component t : b) {
-				resize(t, scaleX, scaleY);
-			}
-		}
-
-	}
-
+	/***
+	 * Create the window on run
+	 */
 	@Override
 	public void run() {
 		CreateWindow();

@@ -1,12 +1,7 @@
 package runner;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.FileHandler;
@@ -21,10 +16,20 @@ import guiObjs.Thread0;
 import guiObjs.Welcome;
 import guiObjs.Window1700;
 
+/***
+ * This launches all the needed threads to be able to run the game
+ * The entry point of the program 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 public class Run {
 
 	public static void main(String[] args) {
+		
+		// Init the data
 		Data.InitData();
+		
+		// Create and set up the logger
 	    Logger logger = Logger.getLogger("MyLog");  
 	    logger.setLevel(Level.WARNING);
 	    FileHandler fh;  
@@ -47,29 +52,36 @@ public class Run {
 	    }  
 	    Data.logger = logger;
 	    Data.logger.finest("Creating All Windows");
+	    
+	    // Create the windows
 		Welcome w = new Welcome();
 		Lobby l = new Lobby();
 		TeamSelect ts = new TeamSelect();
 		Window1700 wd = new Window1700();
 		
 		Data.logger.finest("Telling Data about windows created");
-		Data.w = wd;
-		Data.s = w;
+		
+		// Lets the data class know about the windows
+		Data.gameWindow = wd;
+		Data.welcome = w;
 		Data.l = l;
 		Data.ts = ts;
 		
 		Data.logger.finest("Starting while loop to ensure thread does not die...");
+		
+		// Keep the thread alive. PRINT STATEMENT NEEDED FOR CONSTANT Synchronization
 		while(!Data.connected) {
 			System.out.println("");
 		}
 		
 		Data.logger.finer("Creating Thread0");
-		Thread0 th = new Thread0(Data.client);
-		Data.th = th;
+		Thread0 th = new Thread0(Data.client); 
+		Data.coms = th;
 		Thread t1 = new Thread(l);
 		
 		Data.logger.info("Starting Lobby Window Thread");
 		
+		// Send and get the Code
 		th.Code();
 		
 		t1.run();
@@ -77,8 +89,6 @@ public class Run {
 		Data.logger.finer("Creating Thread0 Thread");
 		Thread t2 = new Thread(th);
 		
-
-
 		Data.logger.finer("Starting Thread0, here we go.");
 		t2.run();
 		

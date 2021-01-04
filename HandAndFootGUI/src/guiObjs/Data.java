@@ -1,17 +1,19 @@
 package guiObjs;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+/***
+ * A data class that acts as a connection between the GUI
+ * and Thread0 (the thread doing the communication). Holds
+ * all values that the GUI uses to paint.
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 public class Data {
 	public static String username;
 	public static int userID;
@@ -32,11 +34,11 @@ public class Data {
 	public static int previousPhase;
 	public static boolean[] dirty;
 	public static boolean update;
-	public static Window w;
+	public static Window gameWindow;
 	public static int pileNumber;
-	public static Thread0 th;
+	public static Thread0 coms;
 	public static Lobby l;
-	public static Welcome s;
+	public static Welcome welcome;
 	public static String ip;
 	public static String port;
 	public static String playerNum;
@@ -61,6 +63,10 @@ public class Data {
 	public static Logger logger;
 	public static int code;
 	
+	/***
+	 * Initializes Data that needs to be
+	 * to start the program
+	 */
 	public static void InitData() {
 		CurrentTurn = 0;
 		client = new Socket();
@@ -95,10 +101,19 @@ public class Data {
 		
 	}
 	
+	/**
+	 * Signifies to the gameWindow that it needs
+	 * to be updated.
+	 */
 	public static void setUpdate() {
-		w.ServerUpdate();
+		gameWindow.ServerUpdate();
 	}
 	
+	/***
+	 * Determines if a book is dirty
+	 * @param c the book in question
+	 * @return if c is dirty or clean
+	 */
 	public static boolean DirtyBook(ArrayList<Card> c) {
 		for(Card d : c) {
 			if(d.value == 2 || d.value == 52 || d.value == 53) {
@@ -109,6 +124,12 @@ public class Data {
 	}
 }
 
+/***
+ * A class that keeps track of Card values
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 class Card{
 	public int value;
 	public int suit;
@@ -129,11 +150,23 @@ class Card{
 	
 }
 
-
+/***
+ * A Player class to keep track of any player values,
+ * groups and foot indicators.
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 class Player {
 	public String name;
+	
+	// Displays the # of cards a player has
 	public int cards;
+	
+	// Groups that the player has
 	public ArrayList<ArrayList<Card>> groups;
+	
+	// Signifies if the player still has their foot
 	public boolean foot;
 	
 	public Player() {

@@ -8,10 +8,23 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/***
+ * The lobby window which displays right after the
+ * user connects or fails to connect. This window
+ * will display the Room Code.
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
 public class Lobby implements Runnable{
 	protected static JFrame frame;
 	protected static JPanel panel;
 	
+	/***
+	 * Displays the window with the
+	 * given information and waits
+	 * to go further.
+	 */
 	public void LobbyWait() {
 		
 		panel = new JPanel();
@@ -19,6 +32,8 @@ public class Lobby implements Runnable{
 		panel.setSize(1700, 950);
 		panel.setBackground(new Color(153, 221, 255));
 		
+		// If the player is connected show the room code
+		// If not display the error.
 		if(Data.client.isConnected()) {
 			Data.logger.finest("Telling user we are waiting...");
 			JLabel waiting = new JLabel("Waiting...", SwingConstants.CENTER);
@@ -27,6 +42,7 @@ public class Lobby implements Runnable{
 			waiting.setSize(350,30);
 			waiting.setLocation(0, 0);
 			panel.add(waiting);
+			
 			JLabel code = new JLabel("Room Code: " + Data.code, SwingConstants.CENTER);
 			code.setFont(new Font("Serif", Font.PLAIN, 25));
 			code.setText("Room Code: " + Data.code);
@@ -57,13 +73,21 @@ public class Lobby implements Runnable{
 		
 		
 	}
-
+	
+	/***
+	 * This is a thread so runs the wait in a new thread and
+	 * waits for further commands.
+	 */
 	@Override
 	public void run() {
 		Data.logger.finest("Starting LobbyWait Process... waiting for more players");
 		LobbyWait();
 	}
 	
+	
+	/***
+	 * Launches the next phase, moving all players into the team select.
+	 */
 	public void start() {
 		Data.logger.fine("Moving from Lobby to TeamSelect");
 		TeamSelect ts = new TeamSelect();

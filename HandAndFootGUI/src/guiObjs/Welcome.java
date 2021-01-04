@@ -14,6 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/***
+ * The welcome screen which will launch when someone launches
+ * the game. It will show a connect, and join button allowing
+ * user's to select a username and input a room code.
+ * 
+ * @author Tyler K. Gordon and Joshua Speckman
+ *
+ */
+
 public class Welcome {
 	
 	protected static JFrame frame;
@@ -30,6 +39,7 @@ public class Welcome {
 	
 	
 	public Welcome() {
+		// Creates the pannel where the buttons will sit
 		panel = new JPanel();
 		panel.setLayout(null);
 		panel.setSize(1280, 720);
@@ -38,13 +48,14 @@ public class Welcome {
 		players = new JTextField();
 		players.setText("");
 		
-		JLabel waiting = new JLabel("Hand And Foot", SwingConstants.CENTER);
-		waiting.setText("Hand And Foot");
-		waiting.setFont(new Font("Serif", Font.BOLD, 50));
-		waiting.setSize(1280,90);
-		waiting.setLocation(0, 0);
-		panel.add(waiting);
+		JLabel title = new JLabel("Hand And Foot", SwingConstants.CENTER);
+		title.setText("Hand And Foot");
+		title.setFont(new Font("Serif", Font.BOLD, 50));
+		title.setSize(1280,90);
+		title.setLocation(0, 0);
+		panel.add(title);
 		
+		// Used to join a given game
 		join = new JButton();
 		join.setText("Join Game");
 		join.setSize(130,30);
@@ -66,6 +77,10 @@ public class Welcome {
 			}
 
 			public void mouseClicked(MouseEvent me) {
+				// Positions text boxes just under the join button and
+				// moves the create game button down
+				
+				// Clicked gets set to one to signify that the join button was clicked
 				Clicked = 1;
 				create.setLocation(570, 240);
 
@@ -122,6 +137,8 @@ public class Welcome {
 			}
 		});
 		panel.add(join);
+		
+		// Used to create a new game
 		create = new JButton();
 		create.setText("Create Game");
 		create.setSize(130,30);
@@ -143,7 +160,7 @@ public class Welcome {
 
 			public void mouseClicked(MouseEvent me) {
 				players = new JTextField();
-				players.setText("4");
+				players.setText("Number of Players");
 				players.setSize(130, 30);
 				players.setLocation(570, 200);
 				players.addMouseListener(new MouseListener() {
@@ -194,6 +211,8 @@ public class Welcome {
 		});
 		panel.add(create);
 		
+		
+		// After the given information is added and connect is clicked then connect the client
 		connect = new JButton();
 		connect.setText("Connect");
 		connect.setSize(300,60);
@@ -221,7 +240,8 @@ public class Welcome {
 		});
 		panel.add(connect);
 		
-		
+		// There are two types of windows, 1700 and 1020, while in dev we coded on 1700
+		// but 1020 ended up working for most people. This can be changed between the two.
 		resolution = new JTextField();
 		resolution.setText("1020");
 		resolution.setSize(130, 30);
@@ -248,8 +268,7 @@ public class Welcome {
 		panel.add(resolution);
 		
 		
-		
-		// frame Code
+		// Create the frame and put the panel on it
 		frame = new JFrame("Hand And Foot");
 		frame.setLayout(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -260,13 +279,26 @@ public class Welcome {
 		frame.validate();
 	}
 	
+	/***
+	 * Jumpship method is used when the client wants to move
+	 * from the welcome screen and connect to a given server
+	 * CONNECTION will be made IFF create was clicked and # of
+	 * players is 4, 6 or 8 OR join was clicked and a correct
+	 * Room Code was entered.
+	 */
 	public void Jumpship() {
 		Data.logger.info("Moving from Welcome Window to Lobby");
 		frame.setVisible(false);
+		
+		// IP and PORT were made static in the last update
 		Data.ip = "52.13.12.123";
 		Data.port = "8080";
+		
 		Data.Resolution = Integer.parseInt(resolution.getText());
 		Data.logger.finer("Connecting to ip " + Data.ip + " on port " + Data.port);
+		
+		// If clicked is set to 1 then join was clicked if not then
+		// if not then join was clicked.
 		if(Clicked == 0) {
 			Data.playerNum = players.getText();
 		}
@@ -281,8 +313,6 @@ public class Welcome {
 			Data.logger.info("Establishing connection");
 			Socket client = new Socket(serverName, port);
 			Data.client = client;
-			
-
 		} catch (IOException e) {
 			Data.logger.severe("Failed to establish connection! Check the internet (and Google).");
 			e.printStackTrace();
