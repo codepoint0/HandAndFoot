@@ -142,8 +142,6 @@ public class Welcome {
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				
-				panel.add(port);
 				players = new JTextField();
 				players.setText("4");
 				players.setSize(130, 30);
@@ -216,12 +214,9 @@ public class Welcome {
 			}
 
 			public void mouseClicked(MouseEvent me) {
-				if(ip.getText() != null && port.getText() != null) {
-					System.out.println("HERE!");
+
 					Connect = true;
 					Jumpship();
-					
-				}
 			}
 		});
 		panel.add(connect);
