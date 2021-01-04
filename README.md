@@ -2,21 +2,11 @@
 
 ## How to Download
 
-### Download Java 12
-You will need to make sure to download Java 12 or above in order to run the application. You can download this here:
-https://www.oracle.com/java/technologies/javase/jdk12-archive-downloads.html
-You will need to make an account before you can download the file.
-
-### Download The Client
-Go here and download the entire folder (click download all files in the top right hand corner of the page).
-https://codepoint0.com/index.php/s/FYRxJG5Mfz3NsD4
-
-### Run the JAR
-Once you run the Jar, a single person in the party should "Create a game" which they will then get a Room Code and be able to share that with the rest of the group who should "Join the game"
+See The WIKI
 
 ## Hand and Foot Rules
 
-[WIP]
+See The WIKI
 
 ## Work Log
 
